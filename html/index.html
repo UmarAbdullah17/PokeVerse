@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PokeVerse</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="PokeVerse home">
+      <span class="brand-mark">PV</span>
+      <span>PokeVerse</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="#pokedex">Pokedex</a>
+      <a href="#types">Types</a>
+      <a href="#regions">Regions</a>
+      <a href="#academy">Academy</a>
+      <a href="theories.html">Theories</a>
+      <a href="#compare">Compare</a>
+      <a href="#funLab">Fun Lab</a>
+      <a href="#favorites">Favorites</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero-section">
+      <div class="hero-copy">
+        <p class="eyebrow">Explore Pokemon from every generation</p>
+        <h1>PokeVerse</h1>
+        <p class="hero-lead">
+          Search Pokemon, study their types, stats, abilities, moves, evolutions,
+          and discover quick lessons from across the Pokemon universe.
+        </p>
+
+        <form class="hero-search" id="heroSearch">
+          <label class="sr-only" for="searchInput">Search Pokemon by name or ID</label>
+          <input id="searchInput" type="search" placeholder="Search Pikachu, Charizard, 25..." autocomplete="off">
+          <button type="submit">Search</button>
+        </form>
+
+        <div class="quick-actions" aria-label="Quick Pokemon searches">
+          <button type="button" data-random>Random Pokemon</button>
+          <button type="button" data-pokemon="pikachu">Pikachu</button>
+          <button type="button" data-pokemon="charizard">Charizard</button>
+          <button type="button" data-pokemon="greninja">Greninja</button>
+        </div>
+
+        <div class="professor-note" id="professorNote">
+          <strong>Professor Pixel:</strong>
+          <span id="professorText">Type a Pokemon name. The lab snacks are nervous.</span>
+        </div>
+      </div>
+
+      <div class="hero-showcase" aria-label="Featured Pokemon">
+        <div class="orbit-card orbit-card-one">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" alt="Pikachu artwork">
+          <span>Electric</span>
+        </div>
+        <div class="orbit-card orbit-card-two">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png" alt="Charizard artwork">
+          <span>Fire / Flying</span>
+        </div>
+        <div class="orbit-card orbit-card-three">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/658.png" alt="Greninja artwork">
+          <span>Water / Dark</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-shell" id="pokedex">
+      <div class="section-heading">
+        <p class="eyebrow">Live Pokedex</p>
+        <h2>Search and inspect Pokemon</h2>
+      </div>
+
+      <div class="dex-layout">
+        <aside class="dex-panel">
+          <div class="panel-title">
+            <h3>Explore</h3>
+            <button type="button" id="loadMoreBtn">Load More</button>
+          </div>
+          <div class="mini-search">
+            <input id="filterInput" type="search" placeholder="Filter loaded Pokemon">
+          </div>
+          <div class="pokemon-list" id="pokemonList" aria-live="polite"></div>
+        </aside>
+
+        <article class="detail-panel" id="detailPanel" aria-live="polite">
+          <div class="empty-state">
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png" alt="Mewtwo artwork">
+            <div>
+              <p class="eyebrow">Ready when you are</p>
+              <h3>Search a Pokemon to reveal its full profile.</h3>
+              <p>Stats, abilities, moves, evolution chain, type badges, and favorite controls will appear here.</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-shell" id="types">
+      <div class="section-heading">
+        <p class="eyebrow">Battle basics</p>
+        <h2>Pokemon Types</h2>
+      </div>
+      <p class="section-intro">Pokemon types are the elemental categories used for battle matchups and Pokemon identity.</p>
+      <div class="type-grid" id="typeGrid"></div>
+    </section>
+
+    <section class="section-shell" id="compare">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Battle lab</p>
+          <h2>Compare Pokemon</h2>
+        </div>
+      </div>
+
+      <form class="compare-form" id="compareForm">
+        <label>
+          <span>First Pokemon</span>
+          <input id="compareOne" type="search" placeholder="Example: Pokemon name or ID" autocomplete="off">
+        </label>
+        <label>
+          <span>Second Pokemon</span>
+          <input id="compareTwo" type="search" placeholder="Example: Pokemon name or ID" autocomplete="off">
+        </label>
+        <button type="submit">Compare</button>
+      </form>
+
+      <div class="compare-results" id="compareResults">
+        <p class="soft-message">Choose two Pokemon to compare stats, types, height, weight, and abilities.</p>
+      </div>
+    </section>
+
+    <section class="section-shell split-section" id="regions">
+      <div>
+        <p class="eyebrow">World map</p>
+        <h2>Regions to explore</h2>
+        <p>
+          Each region introduces new Pokemon, characters, gyms, rivals, villains,
+          and stories. Start with a region, then search its most famous Pokemon.
+        </p>
+      </div>
+      <div class="region-grid" id="regionGrid"></div>
+    </section>
+
+    <section class="section-shell split-section" id="academy">
+      <div>
+        <p class="eyebrow">Trainer academy</p>
+        <h2>Learn the universe</h2>
+        <p>
+          PokeVerse is designed to become a study hub for Pokemon. These cards are
+          starting points for lessons about catching, evolution, battles, and teams.
+        </p>
+      </div>
+      <div class="lesson-grid">
+        <article>
+          <span>01</span>
+          <h3>Evolution</h3>
+          <p>Pokemon can evolve by level, friendship, trade, stones, special items, or unique conditions.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h3>Abilities</h3>
+          <p>Abilities add passive effects that can change battles, exploration, weather, and status strategy.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h3>Stats</h3>
+          <p>HP, Attack, Defense, Special Attack, Special Defense, and Speed define a Pokemon battle role.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-shell fun-lab" id="funLab">
+      <div>
+        <p class="eyebrow">Fun lab</p>
+        <h2>PokeVerse experiments</h2>
+        <p>These little buttons are here for pure trainer energy.</p>
+      </div>
+      <div class="fun-grid">
+        <button type="button" id="teamBtn">
+          <span>Random Team Builder</span>
+          <small>Generate a surprise team of six Pokemon</small>
+        </button>
+        <button type="button" id="silhouetteBtn">
+          <span>Who's That Pokemon?</span>
+          <small>Guess the shadow before the reveal</small>
+        </button>
+        <button type="button" id="quizBtn">
+          <span>Type Quiz</span>
+          <small>Guess a Pokemon type from its artwork</small>
+        </button>
+      </div>
+      <div class="fun-result" id="funResult"></div>
+    </section>
+
+    <section class="section-shell" id="favorites">
+      <div class="section-heading">
+        <p class="eyebrow">Your team</p>
+        <h2>Favorite Pokemon</h2>
+      </div>
+      <div class="favorites-grid" id="favoritesGrid"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="../js/app.js"></script>
+</body>
+</html>
