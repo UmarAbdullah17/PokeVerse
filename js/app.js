@@ -674,7 +674,7 @@ function initScrollReveals() {
       ".regions-hero",
       ".pokeballs-hero",
       ".theory-hero",
-      ".main-pokeball",
+      ".ash-hero-visual",
       ".pokeball-card",
       ".capture-steps article",
       ".region-detail-card",

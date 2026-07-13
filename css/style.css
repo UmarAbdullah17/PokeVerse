@@ -1729,111 +1729,280 @@ textarea {
   padding: clamp(36px, 6vw, 76px) clamp(16px, 5vw, 64px) 42px;
 }
 
-.pokeball-display {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.78);
-  border-radius: var(--radius);
-  background:
-    radial-gradient(circle at 16% 12%, rgba(239, 68, 68, 0.18), transparent 28%),
-    radial-gradient(circle at 86% 18%, rgba(37, 99, 235, 0.16), transparent 30%),
-    rgba(255, 255, 255, 0.72);
-  box-shadow: var(--shadow);
-  padding: 18px;
-}
-
-.main-pokeball {
-  display: grid;
-  justify-items: center;
-  align-content: start;
-  min-height: 240px;
-  padding: 22px 18px;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
-}
-
-.main-pokeball h2 {
-  margin: 14px 0 8px;
-  font-size: clamp(1.35rem, 2.3vw, 2rem);
-}
-
-.main-pokeball p {
-  margin-bottom: 0;
-}
-
-.ball-art {
+.ash-hero-visual {
   position: relative;
-  display: block;
-  width: 118px;
-  aspect-ratio: 1;
+  display: grid;
+  min-height: 590px;
+  margin: 0;
+  place-items: center;
   overflow: hidden;
   background:
-    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.72) 0 12%, transparent 13%),
-    linear-gradient(145deg, rgba(255, 255, 255, 0.3), transparent 36%),
-    linear-gradient(var(--ball-top) 0 47%, var(--ink) 47% 53%, #f8fafc 53% 100%);
-  border: 7px solid #172033;
-  border-radius: 50%;
-  box-shadow:
-    inset -16px -18px 24px rgba(15, 23, 42, 0.22),
-    inset 10px 12px 18px rgba(255, 255, 255, 0.34),
-    0 16px 28px rgba(15, 23, 42, 0.18);
+    radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.96) 0 23%, transparent 24%),
+    radial-gradient(circle at 50% 44%, rgba(250, 204, 21, 0.38) 0 39%, transparent 40%),
+    linear-gradient(145deg, rgba(239, 68, 68, 0.14), rgba(255, 255, 255, 0.82) 45%, rgba(37, 99, 235, 0.18));
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
 }
 
-.ball-art::before,
-.ball-art::after {
+.ash-hero-visual::before,
+.ash-hero-visual::after {
   content: "";
   position: absolute;
   border-radius: 50%;
+  pointer-events: none;
 }
 
-.ball-art::before {
-  z-index: 2;
-  width: 44px;
-  height: 44px;
-  left: calc(50% - 22px);
-  top: calc(50% - 22px);
-  background:
-    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.98) 0 12%, transparent 13%),
-    radial-gradient(circle at 50% 50%, #ffffff 0 25%, #dbe3ee 26% 42%, #f8fafc 43% 58%, #172033 59% 73%, #f8fafc 74% 100%);
-  border: 5px solid #172033;
-  box-shadow:
-    inset -5px -6px 8px rgba(15, 23, 42, 0.24),
-    inset 4px 4px 7px rgba(255, 255, 255, 0.92),
-    0 0 0 5px rgba(255, 255, 255, 0.82),
-    0 5px 9px rgba(15, 23, 42, 0.34);
+.ash-hero-visual::before {
+  width: 360px;
+  height: 360px;
+  top: -210px;
+  right: -170px;
+  border: 46px solid rgba(37, 99, 235, 0.1);
 }
 
-.ball-art::after {
+.ash-hero-visual::after {
+  width: 240px;
+  height: 240px;
+  bottom: -150px;
+  left: -110px;
+  border: 34px solid rgba(239, 68, 68, 0.1);
+}
+
+.ash-hero-visual img {
+  position: relative;
   z-index: 1;
-  inset: 0;
+  width: auto;
+  max-width: 96%;
+  height: min(570px, 67vw);
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 26px 24px rgba(15, 23, 42, 0.2));
+}
+
+.capture-kit {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(18px, 2.5vw, 26px);
+  color: white;
   background:
-    linear-gradient(115deg, rgba(255, 255, 255, 0.48) 0 18%, transparent 19% 100%),
-    radial-gradient(circle at 70% 78%, rgba(15, 23, 42, 0.22), transparent 38%);
+    radial-gradient(circle at 92% 0%, rgba(37, 99, 235, 0.72), transparent 36%),
+    radial-gradient(circle at 0% 100%, rgba(239, 68, 68, 0.45), transparent 34%),
+    #172033;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 22px;
+  box-shadow: 0 26px 70px rgba(15, 23, 42, 0.28);
 }
 
-.ball-art-poke {
-  --ball-top: var(--red);
+.capture-kit::before {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  top: -150px;
+  right: -110px;
+  border: 36px solid rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
-.ball-art-great {
-  --ball-top: var(--blue);
+.capture-kit-heading,
+.capture-field-rule {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
 }
 
-.ball-art-ultra {
-  --ball-top: var(--ink);
+.capture-kit-heading {
+  margin-bottom: 18px;
+}
+
+.capture-kit-heading .eyebrow {
+  margin-bottom: 7px;
+  color: #93c5fd;
+}
+
+.capture-kit-heading h2 {
+  margin: 0;
+  color: white;
+  font-size: clamp(1.45rem, 2.6vw, 2.15rem);
+}
+
+.capture-kit-count {
+  flex: 0 0 auto;
+  padding: 8px 11px;
+  color: #172033;
+  background: var(--yellow);
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.capture-kit-feature {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(150px, 0.76fr) minmax(0, 1.24fr);
+  gap: clamp(18px, 3vw, 30px);
+  align-items: center;
+  min-height: 230px;
+  padding: clamp(18px, 3vw, 28px);
+  color: var(--ink);
   background:
-    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.58) 0 12%, transparent 13%),
-    linear-gradient(90deg, transparent 0 24%, var(--yellow) 24% 35%, transparent 35% 65%, var(--yellow) 65% 76%, transparent 76% 100%),
-    linear-gradient(145deg, rgba(255, 255, 255, 0.16), transparent 36%),
-    linear-gradient(var(--ink) 0 47%, var(--ink) 47% 53%, #f8fafc 53% 100%);
+    radial-gradient(circle at 18% 20%, rgba(250, 204, 21, 0.3), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #eaf3ff);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
 }
 
-.ball-art-master {
-  --ball-top: var(--violet);
+.capture-kit-visual {
+  position: relative;
+  display: grid;
+  min-height: 180px;
+  place-items: center;
+}
+
+.capture-kit-visual img {
+  position: relative;
+  z-index: 2;
+  width: clamp(132px, 16vw, 178px);
+  filter: drop-shadow(0 22px 20px rgba(15, 23, 42, 0.25));
+  transform: rotate(-7deg);
+}
+
+.capture-kit-orbit {
+  position: absolute;
+  width: 170px;
+  aspect-ratio: 1;
+  border: 1px dashed rgba(37, 99, 235, 0.32);
+  border-radius: 50%;
+  box-shadow: 0 0 0 18px rgba(37, 99, 235, 0.05);
+}
+
+.capture-kit-visual > span:last-child {
+  position: absolute;
+  z-index: 3;
+  right: 0;
+  bottom: 2px;
+  padding: 7px 10px;
+  color: white;
+  background: var(--blue);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
+}
+
+.capture-kit-copy h3 {
+  margin-bottom: 10px;
+  font-size: clamp(1.45rem, 2.6vw, 2.25rem);
+  line-height: 1.08;
+}
+
+.capture-kit-copy p {
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+
+.capture-kit-kicker {
+  margin-bottom: 7px !important;
+  color: var(--blue) !important;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.capture-kit-copy a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--blue);
+  font-weight: 800;
+}
+
+.capture-kit-copy a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.capture-route-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.capture-route {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 9px;
+  align-items: center;
+  min-width: 0;
+  padding: 11px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  transition: background 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+}
+
+.capture-route:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-2px);
+}
+
+.capture-route img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.22));
+}
+
+.capture-route span {
+  min-width: 0;
+}
+
+.capture-route small,
+.capture-route strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.capture-route small {
+  margin-bottom: 2px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
+.capture-route strong {
+  color: white;
+  font-size: 0.84rem;
+}
+
+.capture-field-rule {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.78rem;
+}
+
+.capture-field-rule strong {
+  flex: 0 0 auto;
+  color: var(--yellow);
+}
+
+.capture-field-rule span {
+  color: rgba(255, 255, 255, 0.72);
+  text-align: right;
 }
 
 .pokeball-grid,
@@ -2887,7 +3056,6 @@ textarea {
   }
 
   .profile-hero,
-  .pokeball-display,
   .spotlight-card,
   .detail-grid,
   .empty-state,
@@ -2936,6 +3104,14 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .ash-hero-visual {
+    min-height: 480px;
+  }
+
+  .ash-hero-visual img {
+    height: 460px;
+  }
+
   .favorites-empty {
     grid-template-columns: 1fr;
     justify-items: center;
@@ -2981,6 +3157,15 @@ textarea {
 
   .quick-actions button {
     flex: 1 1 140px;
+  }
+
+  .ash-hero-visual {
+    min-height: 390px;
+    border-radius: 16px;
+  }
+
+  .ash-hero-visual img {
+    height: 380px;
   }
 
   .hero-search {
