@@ -223,15 +223,11 @@ button:disabled {
 }
 
 .brand-mark {
-  display: grid;
+  display: block;
   width: 42px;
   height: 42px;
-  place-items: center;
-  color: white;
-  background: linear-gradient(135deg, var(--red), var(--blue));
-  border: 3px solid white;
-  border-radius: 50%;
-  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.24);
+  object-fit: contain;
+  filter: drop-shadow(0 8px 10px rgba(37, 99, 235, 0.22));
 }
 
 .site-nav {
@@ -963,8 +959,8 @@ textarea {
 }
 
 .orbit-card-two {
-  top: 130px;
-  right: 0;
+  top: 0px;
+  right: -36px;
   animation: floatTwo 5.8s ease-in-out infinite;
 }
 
