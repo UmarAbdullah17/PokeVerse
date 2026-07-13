@@ -3,6 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (() => {
+      try {
+        const savedTheme = localStorage.getItem("pokeVerseTheme");
+        const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.dataset.theme = savedTheme || preferredTheme;
+      } catch (error) {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
   <title>PokeVerse</title>
   <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -24,6 +36,7 @@
       <a href="theories.html">Theories</a>
       <a href="#compare">Compare</a>
       <a href="#funLab">Fun Lab</a>
+      <a href="#teamBuilder">Team</a>
       <a href="#favorites">Favorites</a>
     </nav>
   </header>
@@ -147,6 +160,75 @@
             <label class="sr-only" for="filterInput">Filter the loaded Pokemon</label>
             <input id="filterInput" type="search" placeholder="Filter loaded Pokemon">
           </div>
+          <details class="dex-filters">
+            <summary>Advanced filters</summary>
+            <div class="dex-filter-grid">
+              <label>
+                <span>Type</span>
+                <select id="typeFilter">
+                  <option value="">Any type</option>
+                  <option>normal</option><option>fire</option><option>water</option><option>electric</option>
+                  <option>grass</option><option>ice</option><option>fighting</option><option>poison</option>
+                  <option>ground</option><option>flying</option><option>psychic</option><option>bug</option>
+                  <option>rock</option><option>ghost</option><option>dragon</option><option>dark</option>
+                  <option>steel</option><option>fairy</option>
+                </select>
+              </label>
+              <label>
+                <span>Generation</span>
+                <select id="generationFilter">
+                  <option value="">Any generation</option>
+                  <option value="1">Generation I</option><option value="2">Generation II</option>
+                  <option value="3">Generation III</option><option value="4">Generation IV</option>
+                  <option value="5">Generation V</option><option value="6">Generation VI</option>
+                  <option value="7">Generation VII</option><option value="8">Generation VIII</option>
+                  <option value="9">Generation IX</option>
+                </select>
+              </label>
+              <label>
+                <span>Region</span>
+                <select id="regionFilter">
+                  <option value="">Any region</option>
+                  <option value="kanto">Kanto</option><option value="johto">Johto</option>
+                  <option value="hoenn">Hoenn</option><option value="sinnoh">Sinnoh</option>
+                  <option value="unova">Unova</option><option value="kalos">Kalos</option>
+                  <option value="alola">Alola</option><option value="galar">Galar</option>
+                  <option value="paldea">Paldea</option>
+                </select>
+              </label>
+              <label>
+                <span>Height</span>
+                <select id="heightFilter">
+                  <option value="">Any height</option>
+                  <option value="short">Under 1 m</option>
+                  <option value="medium">1–2 m</option>
+                  <option value="tall">Over 2 m</option>
+                </select>
+              </label>
+              <label>
+                <span>Minimum total stats</span>
+                <input id="minStatsFilter" type="number" min="0" max="720" step="10" placeholder="Example: 450">
+              </label>
+              <label>
+                <span>Special status</span>
+                <select id="specialFilter">
+                  <option value="">All Pokemon</option>
+                  <option value="legendary">Legendary only</option>
+                  <option value="mythical">Mythical only</option>
+                </select>
+              </label>
+              <label class="filter-wide">
+                <span>Sort</span>
+                <select id="sortFilter">
+                  <option value="id">Pokedex number</option>
+                  <option value="name">Name</option>
+                  <option value="stats-desc">Highest total stats</option>
+                  <option value="height-desc">Tallest first</option>
+                </select>
+              </label>
+              <button class="clear-filters-btn filter-wide" type="button" id="clearFiltersBtn">Clear filters</button>
+            </div>
+          </details>
           <div class="pokemon-list" id="pokemonList" aria-live="polite"></div>
         </aside>
 
@@ -170,6 +252,19 @@
       </div>
       <p class="section-intro">Pokemon types are the elemental categories used for battle matchups and Pokemon identity.</p>
       <div class="type-grid" id="typeGrid"></div>
+
+      <div class="matchup-lab" id="matchupLab">
+        <div>
+          <p class="eyebrow">Interactive matchup tool</p>
+          <h3>Build a battle plan</h3>
+          <p>Select a type to see its offensive strengths and defensive risks.</p>
+        </div>
+        <label class="matchup-select">
+          <span>Pokemon type</span>
+          <select id="matchupType"></select>
+        </label>
+        <div class="matchup-results" id="matchupResults" aria-live="polite"></div>
+      </div>
     </section>
 
     <section class="section-shell" id="compare">
@@ -301,12 +396,42 @@
       <div class="fun-result" id="funResult"></div>
     </section>
 
+    <section class="section-shell" id="teamBuilder">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Team workshop</p>
+          <h2>Build your team of six</h2>
+          <p class="section-intro">Add Pokemon, change their order, and find weaknesses shared across your team. Your lineup stays saved on this device.</p>
+        </div>
+      </div>
+
+      <form class="team-builder-form" id="teamBuilderForm">
+        <label>
+          <span>Pokemon name or ID</span>
+          <input id="teamPokemonInput" type="search" placeholder="Example: Lucario or 448" autocomplete="off">
+        </label>
+        <button type="submit">Add Pokemon</button>
+        <button type="button" id="randomizeTeamBtn">Random team</button>
+        <button type="button" class="secondary-action" id="clearTeamBtn">Clear team</button>
+      </form>
+
+      <div class="team-builder-layout">
+        <div class="team-roster" id="teamRoster" aria-live="polite"></div>
+        <aside class="team-analysis" id="teamAnalysis" aria-live="polite"></aside>
+      </div>
+    </section>
+
     <section class="section-shell" id="favorites">
       <div class="section-heading">
         <div>
           <p class="eyebrow">Your team shelf</p>
           <h2>Favorite Pokemon</h2>
           <p class="section-intro">Save Pokemon from the Pokedex and watch your personal team shelf come alive. Favorites stay saved on this device after you close the site.</p>
+        </div>
+        <div class="favorites-tools">
+          <button type="button" id="exportFavoritesBtn">Export JSON</button>
+          <button type="button" id="importFavoritesBtn">Import JSON</button>
+          <input class="sr-only" id="favoritesFileInput" type="file" accept="application/json,.json">
         </div>
       </div>
       <div class="favorites-grid" id="favoritesGrid"></div>

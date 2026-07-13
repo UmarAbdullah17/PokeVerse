@@ -261,12 +261,34 @@ let typeQuizScore = 0;
 let soundEnabled = localStorage.getItem("pokeVerseSound") === "on";
 let activeSearchId = 0;
 let activeSuggestionIndex = -1;
+let activeFilterId = 0;
+let trainerTeam = readStoredList("pokeVerseTeam").slice(0, 6);
 const cache = new Map();
+
+const generationRanges = [
+  { generation: "1", region: "kanto", min: 1, max: 151 },
+  { generation: "2", region: "johto", min: 152, max: 251 },
+  { generation: "3", region: "hoenn", min: 252, max: 386 },
+  { generation: "4", region: "sinnoh", min: 387, max: 493 },
+  { generation: "5", region: "unova", min: 494, max: 649 },
+  { generation: "6", region: "kalos", min: 650, max: 721 },
+  { generation: "7", region: "alola", min: 722, max: 809 },
+  { generation: "8", region: "galar", min: 810, max: 905 },
+  { generation: "9", region: "paldea", min: 906, max: MAX_POKEMON_ID }
+];
 
 const elements = {
   heroSearch: document.getElementById("heroSearch"),
   searchInput: document.getElementById("searchInput"),
   filterInput: document.getElementById("filterInput"),
+  typeFilter: document.getElementById("typeFilter"),
+  generationFilter: document.getElementById("generationFilter"),
+  regionFilter: document.getElementById("regionFilter"),
+  heightFilter: document.getElementById("heightFilter"),
+  minStatsFilter: document.getElementById("minStatsFilter"),
+  specialFilter: document.getElementById("specialFilter"),
+  sortFilter: document.getElementById("sortFilter"),
+  clearFiltersBtn: document.getElementById("clearFiltersBtn"),
   pokemonList: document.getElementById("pokemonList"),
   detailPanel: document.getElementById("detailPanel"),
   compareForm: document.getElementById("compareForm"),
@@ -275,8 +297,19 @@ const elements = {
   compareResults: document.getElementById("compareResults"),
   loadMoreBtn: document.getElementById("loadMoreBtn"),
   typeGrid: document.getElementById("typeGrid"),
+  matchupType: document.getElementById("matchupType"),
+  matchupResults: document.getElementById("matchupResults"),
   regionGrid: document.getElementById("regionGrid"),
   favoritesGrid: document.getElementById("favoritesGrid"),
+  exportFavoritesBtn: document.getElementById("exportFavoritesBtn"),
+  importFavoritesBtn: document.getElementById("importFavoritesBtn"),
+  favoritesFileInput: document.getElementById("favoritesFileInput"),
+  teamBuilderForm: document.getElementById("teamBuilderForm"),
+  teamPokemonInput: document.getElementById("teamPokemonInput"),
+  randomizeTeamBtn: document.getElementById("randomizeTeamBtn"),
+  clearTeamBtn: document.getElementById("clearTeamBtn"),
+  teamRoster: document.getElementById("teamRoster"),
+  teamAnalysis: document.getElementById("teamAnalysis"),
   professorText: document.getElementById("professorText"),
   teamBtn: document.getElementById("teamBtn"),
   silhouetteBtn: document.getElementById("silhouetteBtn"),
@@ -300,13 +333,19 @@ function init() {
   initActiveNav();
   initScrollReveals();
   initSiteEnhancements();
+  initSiteFooter();
   renderSearchRecommendations();
   if (elements.typeGrid) renderTypeGuide();
+  if (elements.matchupType) initMatchupLab();
   if (elements.regionGrid) renderRegions();
   if (elements.favoritesGrid) renderFavorites();
+  if (elements.teamRoster) renderTeamBuilder();
   renderDailyMission();
   bindEvents();
-  if (elements.detailPanel && elements.searchInput) searchPokemon("pikachu", { scroll: false });
+  const sharedPokemon = new URLSearchParams(window.location.search).get("pokemon");
+  if (elements.detailPanel && elements.searchInput) {
+    searchPokemon(sharedPokemon || "pikachu", { scroll: Boolean(sharedPokemon), updateUrl: false });
+  }
   if (elements.pokemonList) scheduleIdleTask(loadPokemonList);
 }
 
@@ -343,8 +382,15 @@ function bindEvents() {
   });
 
   elements.filterInput?.addEventListener("input", () => {
-    renderPokemonList(loadedPokemon);
+    applyPokemonFilters();
   });
+
+  [elements.typeFilter, elements.generationFilter, elements.regionFilter,
+    elements.heightFilter, elements.minStatsFilter, elements.specialFilter,
+    elements.sortFilter].forEach((control) => control?.addEventListener("change", applyPokemonFilters));
+  elements.minStatsFilter?.addEventListener("input", applyPokemonFilters);
+  elements.clearFiltersBtn?.addEventListener("click", clearPokemonFilters);
+  elements.matchupType?.addEventListener("change", () => renderTypeMatchup(elements.matchupType.value));
 
   elements.loadMoreBtn?.addEventListener("click", loadPokemonList);
 
@@ -367,6 +413,12 @@ function bindEvents() {
   });
 
   elements.teamBtn?.addEventListener("click", buildRandomTeam);
+  elements.teamBuilderForm?.addEventListener("submit", addTeamPokemon);
+  elements.randomizeTeamBtn?.addEventListener("click", randomizeTrainerTeam);
+  elements.clearTeamBtn?.addEventListener("click", clearTrainerTeam);
+  elements.exportFavoritesBtn?.addEventListener("click", exportFavorites);
+  elements.importFavoritesBtn?.addEventListener("click", () => elements.favoritesFileInput?.click());
+  elements.favoritesFileInput?.addEventListener("change", importFavorites);
   elements.silhouetteBtn?.addEventListener("click", resetSilhouetteChallenge);
   elements.quizBtn?.addEventListener("click", resetProfessorQuiz);
   elements.newMissionBtn?.addEventListener("click", renderDailyMission);
@@ -490,6 +542,10 @@ function initSiteEnhancements() {
     document.body.prepend(skipLink);
   }
 
+  const themeToggle = document.createElement("button");
+  themeToggle.className = "theme-toggle";
+  themeToggle.type = "button";
+
   const header = document.querySelector(".site-header");
   const nav = header?.querySelector(".site-nav");
   if (header && nav) {
@@ -501,7 +557,10 @@ function initSiteEnhancements() {
     navToggle.setAttribute("aria-controls", nav.id);
     navToggle.setAttribute("aria-expanded", "false");
     navToggle.innerHTML = `<span aria-hidden="true"></span><span class="nav-toggle-label">Menu</span>`;
-    header.insertBefore(navToggle, nav);
+    const headerControls = document.createElement("div");
+    headerControls.className = "header-controls";
+    headerControls.append(themeToggle, navToggle);
+    header.appendChild(headerControls);
     navToggle.addEventListener("click", () => {
       const isOpen = header.classList.toggle("nav-open");
       navToggle.setAttribute("aria-expanded", String(isOpen));
@@ -520,6 +579,8 @@ function initSiteEnhancements() {
       navToggle.querySelector(".nav-toggle-label").textContent = "Menu";
       navToggle.focus();
     });
+  } else {
+    document.body.appendChild(themeToggle);
   }
 
   const progress = document.createElement("div");
@@ -539,6 +600,14 @@ function initSiteEnhancements() {
   soundToggle.type = "button";
   soundToggle.setAttribute("aria-label", "Toggle sound effects");
   document.body.appendChild(soundToggle);
+
+  const updateThemeToggle = () => {
+    const isDark = document.documentElement.dataset.theme === "dark";
+    themeToggle.textContent = isDark ? "☀" : "☾";
+    themeToggle.setAttribute("aria-pressed", String(isDark));
+    themeToggle.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+    themeToggle.title = isDark ? "Light mode" : "Dark mode";
+  };
 
   const updateSoundToggle = () => {
     soundToggle.classList.toggle("muted", !soundEnabled);
@@ -565,6 +634,18 @@ function initSiteEnhancements() {
     showToast(soundEnabled ? "Sound effects on." : "Sound effects off.");
   });
 
+  themeToggle.addEventListener("click", () => {
+    const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = nextTheme;
+    try {
+      localStorage.setItem("pokeVerseTheme", nextTheme);
+    } catch (error) {
+      // The theme still works for this visit when storage is unavailable.
+    }
+    updateThemeToggle();
+    showToast(`${capitalize(nextTheme)} mode enabled.`);
+  });
+
   document.addEventListener("keydown", (event) => {
     const isTyping = ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName);
     if (event.key !== "/" || isTyping || !elements.searchInput) return;
@@ -575,10 +656,39 @@ function initSiteEnhancements() {
   });
 
   initPointerGlow();
+  updateThemeToggle();
   updateSoundToggle();
   updateScrollTools();
   window.addEventListener("scroll", updateScrollTools, { passive: true });
   window.addEventListener("resize", updateScrollTools);
+}
+
+function initSiteFooter() {
+  const main = document.querySelector("main");
+  if (!main || document.querySelector(".site-footer")) return;
+  const footer = document.createElement("footer");
+  footer.className = "site-footer";
+  footer.innerHTML = `
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" aria-label="PokeVerse home"><span class="mini-ball" aria-hidden="true"></span>PokeVerse</a>
+        <p>A fan-made Pokemon explorer for curious trainers.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="index.html#pokedex">Pokedex</a>
+        <a href="index.html#types">Types</a>
+        <a href="index.html#teamBuilder">Team Builder</a>
+        <a href="regions.html">Regions</a>
+        <a href="pokeballs.html">Poke Balls</a>
+      </nav>
+      <div class="footer-meta">
+        <p>Pokemon data from <a href="https://pokeapi.co/" target="_blank" rel="noreferrer">PokeAPI</a>.</p>
+        <a href="https://github.com/UmarAbdullah17/PokeVerse" target="_blank" rel="noreferrer">View on GitHub</a>
+        <small>&copy; ${new Date().getFullYear()} PokeVerse fan project. Pokemon belongs to Nintendo, Game Freak, and The Pokemon Company.</small>
+      </div>
+    </div>
+  `;
+  main.insertAdjacentElement("afterend", footer);
 }
 
 function initPointerGlow() {
@@ -867,7 +977,7 @@ async function loadPokemonList() {
 
     loadedPokemon = [...loadedPokemon, ...listed];
     listOffset += PAGE_SIZE;
-    renderPokemonList(loadedPokemon);
+    applyPokemonFilters();
   } catch (error) {
     elements.pokemonList.innerHTML = `
       <div class="list-error">
@@ -883,7 +993,7 @@ async function loadPokemonList() {
 }
 
 function renderPokemonList(pokemon) {
-  const filter = elements.filterInput.value.trim().toLowerCase();
+  const filter = elements.filterInput?.value.trim().toLowerCase() || "";
   const filtered = filter
     ? pokemon.filter((item) => item.name.includes(filter) || String(item.id).includes(filter))
     : pokemon;
@@ -911,6 +1021,73 @@ function renderPokemonList(pokemon) {
   }).join("");
 }
 
+async function applyPokemonFilters() {
+  if (!elements.pokemonList) return;
+  const filterId = ++activeFilterId;
+  let filtered = [...loadedPokemon];
+  const generation = elements.generationFilter?.value || "";
+  const region = elements.regionFilter?.value || "";
+  const generationRange = generationRanges.find((item) => item.generation === generation);
+  const regionRange = generationRanges.find((item) => item.region === region);
+
+  if (generationRange) filtered = filtered.filter((item) => item.id >= generationRange.min && item.id <= generationRange.max);
+  if (regionRange) filtered = filtered.filter((item) => item.id >= regionRange.min && item.id <= regionRange.max);
+
+  const needsDetails = elements.typeFilter?.value || elements.heightFilter?.value
+    || elements.minStatsFilter?.value || elements.specialFilter?.value
+    || ["stats-desc", "height-desc", "name"].includes(elements.sortFilter?.value);
+
+  try {
+    if (needsDetails && filtered.length) {
+      elements.pokemonList.setAttribute("aria-busy", "true");
+      filtered = await Promise.all(filtered.map(async (item) => {
+        const pokemon = await fetchPokemon(item.name);
+        if (!elements.specialFilter?.value) return pokemon;
+        const species = await fetchJson(pokemon.species.url);
+        return { ...pokemon, isLegendary: species.is_legendary, isMythical: species.is_mythical };
+      }));
+    }
+
+    if (filterId !== activeFilterId) return;
+    const type = elements.typeFilter?.value;
+    const height = elements.heightFilter?.value;
+    const minimumStats = Number(elements.minStatsFilter?.value || 0);
+    const special = elements.specialFilter?.value;
+
+    if (type) filtered = filtered.filter((item) => item.types?.some(({ type: entry }) => entry.name === type));
+    if (height === "short") filtered = filtered.filter((item) => item.height < 10);
+    if (height === "medium") filtered = filtered.filter((item) => item.height >= 10 && item.height <= 20);
+    if (height === "tall") filtered = filtered.filter((item) => item.height > 20);
+    if (minimumStats) filtered = filtered.filter((item) => totalStats(item) >= minimumStats);
+    if (special === "legendary") filtered = filtered.filter((item) => item.isLegendary);
+    if (special === "mythical") filtered = filtered.filter((item) => item.isMythical);
+
+    const sort = elements.sortFilter?.value || "id";
+    filtered.sort((a, b) => {
+      if (sort === "name") return a.name.localeCompare(b.name);
+      if (sort === "stats-desc") return totalStats(b) - totalStats(a);
+      if (sort === "height-desc") return b.height - a.height;
+      return a.id - b.id;
+    });
+    renderPokemonList(filtered);
+  } catch (error) {
+    showToast("Some advanced filters could not load. Try again.", "error");
+  } finally {
+    if (filterId === activeFilterId) elements.pokemonList.removeAttribute("aria-busy");
+  }
+}
+
+function clearPokemonFilters() {
+  [elements.typeFilter, elements.generationFilter, elements.regionFilter,
+    elements.heightFilter, elements.specialFilter].forEach((control) => {
+    if (control) control.value = "";
+  });
+  if (elements.minStatsFilter) elements.minStatsFilter.value = "";
+  if (elements.sortFilter) elements.sortFilter.value = "id";
+  if (elements.filterInput) elements.filterInput.value = "";
+  applyPokemonFilters();
+}
+
 async function searchPokemon(query, options = {}) {
   const cleanQuery = String(query).trim().toLowerCase();
   if (!cleanQuery) return;
@@ -931,6 +1108,7 @@ async function searchPokemon(query, options = {}) {
     if (searchId !== activeSearchId) return;
 
     renderPokemonDetails(pokemon, species, evolution);
+    if (options.updateUrl !== false) updatePokemonUrl(pokemon.id);
     reactToPokemon(pokemon);
     if (options.scroll !== false) {
       document.getElementById("pokedex")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -998,6 +1176,9 @@ function renderPokemonDetails(pokemon, species, evolution) {
           <p>${flavor}</p>
           <button class="favorite-btn ${isFavorite ? "active" : ""}" type="button" onclick="toggleFavorite('${pokemon.name}')">
             ${isFavorite ? "Saved to Favorites" : "Add to Favorites"}
+          </button>
+          <button class="share-pokemon-btn" type="button" onclick="sharePokemon(${pokemon.id}, '${pokemon.name}')">
+            Copy share link
           </button>
         </div>
         <img class="profile-art" src="${art}" alt="${pokemon.name} official artwork">
@@ -1081,7 +1262,45 @@ function renderTypeGuide() {
   `).join("");
 }
 
+function initMatchupLab() {
+  elements.matchupType.innerHTML = Object.keys(typeColors).map((type) =>
+    `<option value="${type}">${capitalize(type)}</option>`
+  ).join("");
+  elements.matchupType.value = "fire";
+  renderTypeMatchup("fire");
+}
+
+async function renderTypeMatchup(type) {
+  if (!elements.matchupResults) return;
+  elements.matchupResults.innerHTML = `<p class="soft-message">Calculating ${capitalize(type)} matchups...</p>`;
+
+  try {
+    const { damage_relations: relations } = await fetchJson(`${API_BASE}/type/${type}`);
+    const groups = [
+      ["Strong against", relations.double_damage_to, "advantage"],
+      ["Weak against", relations.double_damage_from, "danger"],
+      ["Resists", relations.half_damage_from, "resist"],
+      ["Not very effective against", relations.half_damage_to, "muted"],
+      ["Immune to", relations.no_damage_from, "immune"],
+      ["Cannot affect", relations.no_damage_to, "muted"]
+    ].filter(([, entries]) => entries.length);
+
+    elements.matchupResults.innerHTML = groups.map(([title, entries, tone]) => `
+      <section class="matchup-group ${tone}">
+        <h4>${title}</h4>
+        <div class="matchup-badges">${entries.map(({ name }) => typeBadge(name)).join("")}</div>
+      </section>
+    `).join("");
+  } catch (error) {
+    elements.matchupResults.innerHTML = `<p class="soft-message">Matchup data is unavailable right now.</p>`;
+  }
+}
+
 async function searchType(type) {
+  if (elements.matchupType) {
+    elements.matchupType.value = type;
+    renderTypeMatchup(type);
+  }
   const matches = loadedPokemon.filter((pokemon) =>
     pokemon.types?.some(({ type: itemType }) => itemType.name === type)
   );
@@ -1120,37 +1339,145 @@ function renderRegions() {
 }
 
 async function buildRandomTeam() {
-  elements.funResult.innerHTML = `
-    <div class="team-builder">
-      <p class="eyebrow">Team builder</p>
-      <h3>Building a surprise team...</h3>
-      <div class="loader"></div>
+  await randomizeTrainerTeam();
+  document.getElementById("teamBuilder")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+async function addTeamPokemon(event) {
+  event.preventDefault();
+  const query = elements.teamPokemonInput?.value.trim().toLowerCase();
+  if (!query) return;
+  if (trainerTeam.length >= 6) {
+    showToast("Your team already has six Pokemon.");
+    return;
+  }
+
+  try {
+    const pokemon = await fetchPokemon(query);
+    if (trainerTeam.includes(pokemon.name)) {
+      showToast(`${capitalize(pokemon.name)} is already on your team.`);
+      return;
+    }
+    trainerTeam.push(pokemon.name);
+    saveTrainerTeam();
+    elements.teamPokemonInput.value = "";
+    await renderTeamBuilder();
+    showToast(`${capitalize(pokemon.name)} joined your team.`);
+  } catch (error) {
+    showToast("That Pokemon could not be added.", "error");
+  }
+}
+
+async function randomizeTrainerTeam() {
+  if (!elements.teamRoster) return;
+  const ids = new Set();
+  while (ids.size < 6) ids.add(Math.floor(Math.random() * MAX_POKEMON_ID) + 1);
+  elements.teamRoster.innerHTML = `<div class="team-loading"><div class="loader"></div><p>Recruiting a surprise squad...</p></div>`;
+
+  try {
+    const team = await Promise.all([...ids].map((id) => fetchPokemon(id)));
+    trainerTeam = team.map((pokemon) => pokemon.name);
+    saveTrainerTeam();
+    await renderTeamBuilder();
+    professorSay("A balanced-looking squad has entered the chat.");
+  } catch (error) {
+    showToast("The random team could not be created.", "error");
+    renderTeamBuilder();
+  }
+}
+
+function clearTrainerTeam() {
+  trainerTeam = [];
+  saveTrainerTeam();
+  renderTeamBuilder();
+  showToast("Team cleared.");
+}
+
+function removeTeamPokemon(index) {
+  trainerTeam.splice(index, 1);
+  saveTrainerTeam();
+  renderTeamBuilder();
+}
+
+function moveTeamPokemon(index, direction) {
+  const nextIndex = index + direction;
+  if (nextIndex < 0 || nextIndex >= trainerTeam.length) return;
+  [trainerTeam[index], trainerTeam[nextIndex]] = [trainerTeam[nextIndex], trainerTeam[index]];
+  saveTrainerTeam();
+  renderTeamBuilder();
+}
+
+function saveTrainerTeam() {
+  localStorage.setItem("pokeVerseTeam", JSON.stringify(trainerTeam));
+}
+
+async function renderTeamBuilder() {
+  if (!elements.teamRoster || !elements.teamAnalysis) return;
+  if (!trainerTeam.length) {
+    elements.teamRoster.innerHTML = Array.from({ length: 6 }, (_, index) => `
+      <div class="empty-team-slot"><span>${index + 1}</span><p>Open team slot</p></div>
+    `).join("");
+    elements.teamAnalysis.innerHTML = `<h3>Team analysis</h3><p>Add Pokemon to reveal shared weaknesses, type variety, and average stats.</p>`;
+    return;
+  }
+
+  elements.teamAnalysis.innerHTML = `<h3>Team analysis</h3><p>Checking matchups...</p>`;
+  try {
+    const team = await Promise.all(trainerTeam.map(fetchPokemon));
+    elements.teamRoster.innerHTML = team.map((pokemon, index) => `
+      <article class="trainer-team-card">
+        <button class="team-card-main" type="button" onclick="searchPokemon('${pokemon.name}')">
+          <span class="team-position">${index + 1}</span>
+          <img src="${getArtwork(pokemon)}" alt="${pokemon.name}">
+          <strong>${capitalize(pokemon.name)}</strong>
+          <small>${pokemon.types.map(({ type }) => capitalize(type.name)).join(" / ")}</small>
+        </button>
+        <div class="team-card-controls" aria-label="Reorder or remove ${pokemon.name}">
+          <button type="button" onclick="moveTeamPokemon(${index}, -1)" ${index === 0 ? "disabled" : ""} aria-label="Move left">&larr;</button>
+          <button type="button" onclick="moveTeamPokemon(${index}, 1)" ${index === team.length - 1 ? "disabled" : ""} aria-label="Move right">&rarr;</button>
+          <button type="button" onclick="removeTeamPokemon(${index})" aria-label="Remove ${pokemon.name}">&times;</button>
+        </div>
+      </article>
+    `).join("");
+    await renderTeamAnalysis(team);
+  } catch (error) {
+    elements.teamAnalysis.innerHTML = `<h3>Team analysis</h3><p>Analysis could not load right now.</p>`;
+  }
+}
+
+async function renderTeamAnalysis(team) {
+  const defenderTypes = [...new Set(team.flatMap((pokemon) => pokemon.types.map(({ type }) => type.name)))];
+  const typeData = await Promise.all(defenderTypes.map(async (type) => [type, await fetchJson(`${API_BASE}/type/${type}`)]));
+  const typeLookup = new Map(typeData);
+  const weaknessCounts = {};
+
+  Object.keys(typeColors).forEach((attackType) => {
+    team.forEach((pokemon) => {
+      let multiplier = 1;
+      pokemon.types.forEach(({ type }) => {
+        const relations = typeLookup.get(type.name).damage_relations;
+        if (relations.no_damage_from.some(({ name }) => name === attackType)) multiplier = 0;
+        else if (relations.double_damage_from.some(({ name }) => name === attackType)) multiplier *= 2;
+        else if (relations.half_damage_from.some(({ name }) => name === attackType)) multiplier *= 0.5;
+      });
+      if (multiplier > 1) weaknessCounts[attackType] = (weaknessCounts[attackType] || 0) + 1;
+    });
+  });
+
+  const shared = Object.entries(weaknessCounts).filter(([, count]) => count >= 2).sort((a, b) => b[1] - a[1]);
+  const averageStats = Math.round(team.reduce((sum, pokemon) => sum + totalStats(pokemon), 0) / team.length);
+  elements.teamAnalysis.innerHTML = `
+    <h3>Team analysis</h3>
+    <div class="team-analysis-facts">
+      <p><strong>${defenderTypes.length}</strong><span>unique types</span></p>
+      <p><strong>${averageStats}</strong><span>average stats</span></p>
+    </div>
+    <h4>Shared weaknesses</h4>
+    <div class="weakness-list">${shared.length
+      ? shared.map(([type, count]) => `<span style="--type-color:${typeColors[type]}">${capitalize(type)} <strong>${count}</strong></span>`).join("")
+      : `<p>No weakness affects two teammates.</p>`}
     </div>
   `;
-
-  const ids = Array.from({ length: 6 }, () => Math.floor(Math.random() * MAX_POKEMON_ID) + 1);
-  const team = await Promise.all(ids.map((id) => fetchPokemon(id)));
-
-  elements.funResult.innerHTML = `
-    <div class="team-builder">
-      <div>
-        <p class="eyebrow">Team builder</p>
-        <h3>Your random squad is ready.</h3>
-        <p>Click any teammate to open its full Pokedex profile.</p>
-      </div>
-      <div class="team-grid">
-        ${team.map((pokemon) => `
-          <button type="button" onclick="searchPokemon('${pokemon.name}')">
-            <img src="${getArtwork(pokemon)}" alt="${pokemon.name}">
-            <strong>${capitalize(pokemon.name)}</strong>
-            <span>${pokemon.types.map(({ type }) => capitalize(type.name)).join(" / ")}</span>
-          </button>
-        `).join("")}
-      </div>
-    </div>
-  `;
-
-  professorSay("A random team has entered the chat.");
 }
 
 function resetSilhouetteChallenge() {
@@ -1403,10 +1730,80 @@ function removeFavorite(name) {
   showToast(`${capitalize(name)} removed from favorites.`);
 }
 
-function getFavorites() {
+function exportFavorites() {
+  const payload = JSON.stringify({
+    app: "PokeVerse",
+    exportedAt: new Date().toISOString(),
+    favorites: getFavorites()
+  }, null, 2);
+  const url = URL.createObjectURL(new Blob([payload], { type: "application/json" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "pokeverse-favorites.json";
+  link.click();
+  URL.revokeObjectURL(url);
+  showToast("Favorites backup exported.", "success");
+}
+
+async function importFavorites(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
   try {
-    const favorites = JSON.parse(localStorage.getItem("pokeVerseFavorites"));
-    return Array.isArray(favorites) ? favorites : [];
+    const data = JSON.parse(await file.text());
+    const imported = Array.isArray(data) ? data : data.favorites;
+    if (!Array.isArray(imported)) throw new Error("Invalid favorites file");
+    const cleaned = [...new Set(imported
+      .filter((name) => typeof name === "string")
+      .map((name) => normalizePokemonQuery(name))
+      .filter(Boolean))];
+    const checked = await Promise.allSettled(cleaned.map((name) => fetchPokemon(name)));
+    const validFavorites = checked
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value.name);
+    if (cleaned.length && !validFavorites.length) throw new Error("No valid Pokemon names");
+    localStorage.setItem("pokeVerseFavorites", JSON.stringify(validFavorites));
+    await renderFavorites();
+    showToast(`${validFavorites.length} favorite${validFavorites.length === 1 ? "" : "s"} imported.`, "success");
+  } catch (error) {
+    showToast("That file is not a valid PokeVerse favorites backup.", "error");
+  } finally {
+    event.target.value = "";
+  }
+}
+
+function updatePokemonUrl(id) {
+  if (!window.history?.replaceState) return;
+  const url = new URL(window.location.href);
+  url.searchParams.set("pokemon", id);
+  url.hash = "pokedex";
+  window.history.replaceState({}, "", url);
+}
+
+async function sharePokemon(id, name) {
+  const url = new URL("pokemon.html", window.location.href);
+  url.searchParams.set("id", id);
+  try {
+    await navigator.clipboard.writeText(url.href);
+  } catch (error) {
+    const input = document.createElement("input");
+    input.value = url.href;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    input.remove();
+  }
+  showToast(`${capitalize(name)} share link copied.`, "success");
+}
+
+function getFavorites() {
+  return readStoredList("pokeVerseFavorites");
+}
+
+function readStoredList(key) {
+  try {
+    const list = JSON.parse(localStorage.getItem(key));
+    return Array.isArray(list) ? list : [];
   } catch (error) {
     return [];
   }
