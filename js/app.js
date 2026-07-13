@@ -45,6 +45,169 @@ const professorLines = [
   "Your trainer license is probably in another backpack."
 ];
 
+const dailyMissions = [
+  {
+    title: "Catch Strategy Drill",
+    text: "Search a Pokemon, check its type, then visit the Pokeball Vault to choose the best ball for it."
+  },
+  {
+    title: "Region Research Run",
+    text: "Open the Region Atlas and pick one region. Then search a famous Pokemon from that region."
+  },
+  {
+    title: "Battle Brain Warmup",
+    text: "Compare two Pokemon with different types and decide which one fits your dream team better."
+  },
+  {
+    title: "Favorite Team Seed",
+    text: "Find three Pokemon you like and save them to Favorites so your team starts taking shape."
+  },
+  {
+    title: "Mystery Lab Session",
+    text: "Play Who's That Pokemon or the Type Quiz in the Fun Lab and try to get three correct."
+  }
+];
+
+const recommendedSearches = [
+  "mewtwo", "lucario", "garchomp", "gengar", "dragonite", "eevee",
+  "sylveon", "umbreon", "gyarados", "snorlax", "arcanine", "lapras",
+  "rayquaza", "gardevoir", "absol", "metagross", "greninja", "mimikyu",
+  "decidueye", "toxtricity", "dragapult", "ceruledge", "tinkaton", "kingambit"
+];
+
+const recommendedPokemonIds = {
+  mewtwo: 150,
+  lucario: 448,
+  garchomp: 445,
+  gengar: 94,
+  dragonite: 149,
+  eevee: 133,
+  sylveon: 700,
+  umbreon: 197,
+  gyarados: 130,
+  snorlax: 143,
+  arcanine: 59,
+  lapras: 131,
+  rayquaza: 384,
+  gardevoir: 282,
+  absol: 359,
+  metagross: 376,
+  greninja: 658,
+  mimikyu: 778,
+  decidueye: 724,
+  toxtricity: 849,
+  dragapult: 887,
+  ceruledge: 937,
+  tinkaton: 959,
+  kingambit: 983
+};
+
+const pokemonSearchAliases = {
+  mimikyu: "mimikyu-disguised",
+  "mimikyu-disguised-form": "mimikyu-disguised",
+  "mimikyu-busted": "mimikyu-busted",
+  giratina: "giratina-altered",
+  shaymin: "shaymin-land",
+  tornadus: "tornadus-incarnate",
+  thundurus: "thundurus-incarnate",
+  landorus: "landorus-incarnate",
+  enamorus: "enamorus-incarnate",
+  basculegion: "basculegion-male",
+  indeedee: "indeedee-male",
+  toxtricity: "toxtricity-amped",
+  eiscue: "eiscue-ice",
+  morpeko: "morpeko-full-belly"
+};
+
+const typeTips = {
+  normal: "Normal types are flexible team fillers with few weaknesses.",
+  fire: "Fire types pressure Grass, Bug, Ice, and Steel Pokemon.",
+  water: "Water types are reliable because they cover Fire, Rock, and Ground.",
+  electric: "Electric types are great speed picks against Water and Flying Pokemon.",
+  grass: "Grass types punish Water, Ground, and Rock teams.",
+  ice: "Ice moves are scary coverage against Dragon, Flying, Grass, and Ground.",
+  fighting: "Fighting types break through Normal, Rock, Steel, Ice, and Dark.",
+  poison: "Poison types are useful against Fairy and Grass Pokemon.",
+  ground: "Ground types are strong attackers and ignore Electric moves.",
+  flying: "Flying types bring speed and pressure Grass, Fighting, and Bug.",
+  psychic: "Psychic types hit Fighting and Poison Pokemon hard.",
+  bug: "Bug types can surprise Psychic, Dark, and Grass Pokemon.",
+  rock: "Rock types are great against Fire, Flying, Bug, and Ice.",
+  ghost: "Ghost types are tricky and immune to Normal and Fighting moves.",
+  dragon: "Dragon types usually bring high power and strong all-around stats.",
+  dark: "Dark types are excellent against Psychic and Ghost Pokemon.",
+  steel: "Steel types resist many attacks and are great defensive anchors.",
+  fairy: "Fairy types are powerful answers to Dragon, Dark, and Fighting Pokemon."
+};
+
+const mysteryWheelPrizes = [
+  {
+    label: "Type Trial",
+    color: "#ef4444",
+    build: () => {
+      const type = randomItem(Object.keys(typeColors));
+      return {
+        title: `${capitalize(type)} Trial`,
+        text: typeTips[type],
+        action: "Search a Pokemon with this type and compare it against a weakness.",
+        color: typeColors[type]
+      };
+    }
+  },
+  {
+    label: "Wild Encounter",
+    color: "#2563eb",
+    build: () => {
+      const pokemon = randomItem(mysteryPokemon);
+      return {
+        title: `${capitalize(pokemon)} Encounter`,
+        text: "A surprise Pokemon has stepped into the tall grass.",
+        action: "Search it, inspect its stats, then decide if it joins your favorites."
+      };
+    }
+  },
+  {
+    label: "Team Rule",
+    color: "#10b981",
+    build: () => ({
+      title: "Team Rule",
+      text: randomItem([
+        "Build a team with no repeated primary types.",
+        "Build a team where every Pokemon looks like it belongs in a different region.",
+        "Build a team around one fast attacker and one bulky defender.",
+        "Build a team using only Pokemon you would actually travel with."
+      ]),
+      action: "Use the Random Team Builder, then swap one teammate to fit the rule."
+    })
+  },
+  {
+    label: "Region Quest",
+    color: "#7c3aed",
+    build: () => {
+      const region = randomItem(regions);
+      return {
+        title: `${region.name} Quest`,
+        text: region.summary,
+        action: "Open the Region Atlas and pick one signature Pokemon from this region."
+      };
+    }
+  },
+  {
+    label: "Capture Dare",
+    color: "#facc15",
+    build: () => ({
+      title: "Capture Dare",
+      text: randomItem([
+        "Pick a Pokemon and choose the most stylish Pokeball for it.",
+        "Find a Pokemon that would deserve a Luxury Ball.",
+        "Choose a Pokemon you would never use a Master Ball on.",
+        "Find a cave or night-themed Pokemon for a Dusk Ball challenge."
+      ]),
+      action: "Visit the Pokeball Vault after choosing your target."
+    })
+  }
+];
+
 const mysteryPokemon = [
   "bulbasaur", "ivysaur", "venusaur", "charmander", "charmeleon", "charizard",
   "squirtle", "wartortle", "blastoise", "caterpie", "butterfree", "pidgeot",
@@ -90,6 +253,14 @@ const mysteryPokemon = [
 let loadedPokemon = [];
 let listOffset = 0;
 let currentPokemonQuery = "pikachu";
+let audioContext;
+let lastUiSoundAt = 0;
+let lastSparkAt = 0;
+let silhouetteScore = 0;
+let typeQuizScore = 0;
+let soundEnabled = localStorage.getItem("pokeVerseSound") === "on";
+let activeSearchId = 0;
+let activeSuggestionIndex = -1;
 const cache = new Map();
 
 const elements = {
@@ -111,25 +282,64 @@ const elements = {
   silhouetteBtn: document.getElementById("silhouetteBtn"),
   quizBtn: document.getElementById("quizBtn"),
   funResult: document.getElementById("funResult"),
+  dailyMissionTitle: document.getElementById("dailyMissionTitle"),
+  dailyMissionText: document.getElementById("dailyMissionText"),
+  newMissionBtn: document.getElementById("newMissionBtn"),
+  spotlightBtn: document.getElementById("spotlightBtn"),
+  spotlightArt: document.getElementById("spotlightArt"),
+  spotlightCard: document.getElementById("spotlightCard"),
+  recommendationList: document.getElementById("recommendationList"),
+  refreshRecommendations: document.getElementById("refreshRecommendations"),
+  searchSuggestions: document.getElementById("searchSuggestions"),
   toast: document.getElementById("toast")
 };
 
 document.addEventListener("DOMContentLoaded", init);
 
 function init() {
-  renderTypeGuide();
-  renderRegions();
-  renderFavorites();
+  initActiveNav();
+  initScrollReveals();
+  initSiteEnhancements();
+  renderSearchRecommendations();
+  if (elements.typeGrid) renderTypeGuide();
+  if (elements.regionGrid) renderRegions();
+  if (elements.favoritesGrid) renderFavorites();
+  renderDailyMission();
   bindEvents();
-  loadPokemonList();
-  searchPokemon("pikachu");
+  if (elements.detailPanel && elements.searchInput) searchPokemon("pikachu", { scroll: false });
+  if (elements.pokemonList) scheduleIdleTask(loadPokemonList);
 }
 
 function bindEvents() {
+  document.addEventListener("click", (event) => {
+    createClickSpark(event.clientX, event.clientY);
+
+    const control = event.target.closest("button, a");
+    if (!control || control.disabled) return;
+    createButtonRipple(event, control);
+    playUiSound("click");
+  });
+
   elements.heroSearch?.addEventListener("submit", (event) => {
     event.preventDefault();
+    playUiSound("confirm");
     const query = elements.searchInput.value.trim().toLowerCase();
+    hideSearchSuggestions();
     if (query) searchPokemon(query);
+  });
+
+  elements.searchInput?.addEventListener("input", () => {
+    renderSearchSuggestions(elements.searchInput.value);
+  });
+
+  elements.searchInput?.addEventListener("focus", () => {
+    renderSearchSuggestions(elements.searchInput.value);
+  });
+
+  elements.searchInput?.addEventListener("keydown", handleSuggestionKeys);
+
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest(".hero-search")) hideSearchSuggestions();
   });
 
   elements.filterInput?.addEventListener("input", () => {
@@ -140,6 +350,7 @@ function bindEvents() {
 
   elements.compareForm?.addEventListener("submit", (event) => {
     event.preventDefault();
+    playUiSound("confirm");
     comparePokemon();
   });
 
@@ -156,8 +367,389 @@ function bindEvents() {
   });
 
   elements.teamBtn?.addEventListener("click", buildRandomTeam);
-  elements.silhouetteBtn?.addEventListener("click", startSilhouetteChallenge);
-  elements.quizBtn?.addEventListener("click", startProfessorQuiz);
+  elements.silhouetteBtn?.addEventListener("click", resetSilhouetteChallenge);
+  elements.quizBtn?.addEventListener("click", resetProfessorQuiz);
+  elements.newMissionBtn?.addEventListener("click", renderDailyMission);
+  elements.spotlightBtn?.addEventListener("click", spinTypeWheel);
+  elements.refreshRecommendations?.addEventListener("click", renderSearchRecommendations);
+}
+
+function renderSearchSuggestions(value) {
+  if (!elements.searchSuggestions) return;
+
+  const query = String(value).trim().toLowerCase();
+  if (!query) {
+    hideSearchSuggestions();
+    return;
+  }
+
+  const searchableNames = getSearchablePokemonNames();
+  const startsWithMatches = searchableNames.filter((name) => name.startsWith(query));
+  const includesMatches = searchableNames.filter((name) => !name.startsWith(query) && name.includes(query));
+  const suggestions = [...startsWithMatches, ...includesMatches].slice(0, 8);
+
+  if (!suggestions.length) {
+    elements.searchSuggestions.innerHTML = `<p>No quick matches yet. Try the full name or ID.</p>`;
+    elements.searchSuggestions.classList.add("visible");
+    elements.searchInput?.setAttribute("aria-expanded", "true");
+    activeSuggestionIndex = -1;
+    return;
+  }
+
+  elements.searchSuggestions.innerHTML = suggestions.map((name) => `
+    <button type="button" role="option" id="suggestion-${name}" aria-selected="false" data-suggestion="${name}">
+      <span>${capitalize(formatName(name))}</span>
+      <small>Search</small>
+    </button>
+  `).join("");
+
+  elements.searchSuggestions.querySelectorAll("[data-suggestion]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const name = button.dataset.suggestion;
+      elements.searchInput.value = name;
+      hideSearchSuggestions();
+      searchPokemon(name);
+    });
+  });
+
+  elements.searchSuggestions.classList.add("visible");
+  elements.searchInput?.setAttribute("aria-expanded", "true");
+  activeSuggestionIndex = -1;
+}
+
+function hideSearchSuggestions() {
+  if (!elements.searchSuggestions) return;
+  elements.searchSuggestions.classList.remove("visible");
+  elements.searchInput?.setAttribute("aria-expanded", "false");
+  elements.searchInput?.removeAttribute("aria-activedescendant");
+  activeSuggestionIndex = -1;
+}
+
+function handleSuggestionKeys(event) {
+  if (!elements.searchSuggestions?.classList.contains("visible")) return;
+  const options = [...elements.searchSuggestions.querySelectorAll("[data-suggestion]")];
+
+  if (event.key === "Escape") {
+    hideSearchSuggestions();
+    return;
+  }
+
+  if (!options.length || !["ArrowDown", "ArrowUp", "Enter"].includes(event.key)) return;
+  if (event.key === "Enter" && activeSuggestionIndex < 0) return;
+
+  event.preventDefault();
+  if (event.key === "ArrowDown") activeSuggestionIndex = (activeSuggestionIndex + 1) % options.length;
+  if (event.key === "ArrowUp") activeSuggestionIndex = (activeSuggestionIndex - 1 + options.length) % options.length;
+
+  if (event.key === "Enter") {
+    options[activeSuggestionIndex].click();
+    return;
+  }
+
+  options.forEach((option, index) => option.setAttribute("aria-selected", String(index === activeSuggestionIndex)));
+  const activeOption = options[activeSuggestionIndex];
+  elements.searchInput.setAttribute("aria-activedescendant", activeOption.id);
+  activeOption.scrollIntoView({ block: "nearest" });
+}
+
+function getSearchablePokemonNames() {
+  return [...new Set([
+    ...recommendedSearches,
+    ...mysteryPokemon,
+    ...Object.keys(pokemonSearchAliases)
+  ])].sort();
+}
+
+function renderSearchRecommendations() {
+  if (!elements.recommendationList) return;
+
+  const picks = shuffleOptions(recommendedSearches).slice(0, 6);
+  elements.recommendationList.innerHTML = picks.map((name) => `
+    <button type="button" data-recommendation="${name}">
+      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${getRecommendedPokemonId(name)}.png" alt="">
+      <span>${capitalize(name)}</span>
+    </button>
+  `).join("");
+
+  elements.recommendationList.querySelectorAll("[data-recommendation]").forEach((button) => {
+    button.addEventListener("click", () => {
+      searchPokemon(button.dataset.recommendation);
+      professorSay(`${capitalize(button.dataset.recommendation)} added to the search queue.`);
+    });
+  });
+}
+
+function initSiteEnhancements() {
+  const skipLink = document.createElement("a");
+  skipLink.className = "skip-link";
+  skipLink.href = "#top";
+  skipLink.textContent = "Skip to main content";
+  const main = document.querySelector("main");
+  if (main) {
+    if (!main.id) main.id = "top";
+    document.body.prepend(skipLink);
+  }
+
+  const header = document.querySelector(".site-header");
+  const nav = header?.querySelector(".site-nav");
+  if (header && nav) {
+    header.classList.add("nav-enhanced");
+    if (!nav.id) nav.id = "mainNavigation";
+    const navToggle = document.createElement("button");
+    navToggle.className = "nav-toggle";
+    navToggle.type = "button";
+    navToggle.setAttribute("aria-controls", nav.id);
+    navToggle.setAttribute("aria-expanded", "false");
+    navToggle.innerHTML = `<span aria-hidden="true"></span><span class="nav-toggle-label">Menu</span>`;
+    header.insertBefore(navToggle, nav);
+    navToggle.addEventListener("click", () => {
+      const isOpen = header.classList.toggle("nav-open");
+      navToggle.setAttribute("aria-expanded", String(isOpen));
+      navToggle.querySelector(".nav-toggle-label").textContent = isOpen ? "Close" : "Menu";
+    });
+    nav.addEventListener("click", (event) => {
+      if (!event.target.closest("a")) return;
+      header.classList.remove("nav-open");
+      navToggle.setAttribute("aria-expanded", "false");
+      navToggle.querySelector(".nav-toggle-label").textContent = "Menu";
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape" || !header.classList.contains("nav-open")) return;
+      header.classList.remove("nav-open");
+      navToggle.setAttribute("aria-expanded", "false");
+      navToggle.querySelector(".nav-toggle-label").textContent = "Menu";
+      navToggle.focus();
+    });
+  }
+
+  const progress = document.createElement("div");
+  progress.className = "scroll-progress";
+  progress.setAttribute("aria-hidden", "true");
+  document.body.appendChild(progress);
+
+  const backToTop = document.createElement("button");
+  backToTop.className = "back-to-top";
+  backToTop.type = "button";
+  backToTop.setAttribute("aria-label", "Back to top");
+  backToTop.innerHTML = "<span></span>";
+  document.body.appendChild(backToTop);
+
+  const soundToggle = document.createElement("button");
+  soundToggle.className = "sound-toggle";
+  soundToggle.type = "button";
+  soundToggle.setAttribute("aria-label", "Toggle sound effects");
+  document.body.appendChild(soundToggle);
+
+  const updateSoundToggle = () => {
+    soundToggle.classList.toggle("muted", !soundEnabled);
+    soundToggle.title = soundEnabled ? "Sound on" : "Sound off";
+    soundToggle.setAttribute("aria-label", soundEnabled ? "Turn sound effects off" : "Turn sound effects on");
+  };
+
+  const updateScrollTools = () => {
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const progressPercent = maxScroll > 0 ? Math.min(100, (window.scrollY / maxScroll) * 100) : 0;
+    progress.style.transform = `scaleX(${progressPercent / 100})`;
+    backToTop.classList.toggle("visible", window.scrollY > 520);
+  };
+
+  backToTop.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  soundToggle.addEventListener("click", () => {
+    soundEnabled = !soundEnabled;
+    localStorage.setItem("pokeVerseSound", soundEnabled ? "on" : "off");
+    updateSoundToggle();
+    if (soundEnabled) playUiSound("success");
+    showToast(soundEnabled ? "Sound effects on." : "Sound effects off.");
+  });
+
+  document.addEventListener("keydown", (event) => {
+    const isTyping = ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName);
+    if (event.key !== "/" || isTyping || !elements.searchInput) return;
+    event.preventDefault();
+    elements.searchInput.focus();
+    elements.searchInput.select();
+    professorSay("Search shortcut opened. Type a Pokemon name or number.");
+  });
+
+  initPointerGlow();
+  updateSoundToggle();
+  updateScrollTools();
+  window.addEventListener("scroll", updateScrollTools, { passive: true });
+  window.addEventListener("resize", updateScrollTools);
+}
+
+function initPointerGlow() {
+  const glowTargets = document.querySelectorAll([
+    ".section-shell",
+    ".mission-card",
+    ".spotlight-card",
+    ".portal-card",
+    ".type-card",
+    ".favorite-card",
+    ".pokeball-card",
+    ".region-detail-card",
+    ".theory-card"
+  ].join(", "));
+
+  glowTargets.forEach((target) => {
+    target.classList.add("pointer-glow");
+    if (!target.querySelector(":scope > .pointer-glow-layer")) {
+      const layer = document.createElement("span");
+      layer.className = "pointer-glow-layer";
+      layer.setAttribute("aria-hidden", "true");
+      target.prepend(layer);
+    }
+
+    target.addEventListener("pointermove", (event) => {
+      const rect = target.getBoundingClientRect();
+      target.style.setProperty("--glow-x", `${event.clientX - rect.left}px`);
+      target.style.setProperty("--glow-y", `${event.clientY - rect.top}px`);
+    });
+  });
+}
+
+function initActiveNav() {
+  const navLinks = [...document.querySelectorAll(".site-nav a")];
+  if (!navLinks.length) return;
+
+  const currentPath = location.pathname.split("/").pop() || "index.html";
+  const sectionLinks = navLinks.filter((link) => {
+    const url = new URL(link.href);
+    const linkPath = url.pathname.split("/").pop() || "index.html";
+    return linkPath === currentPath && url.hash && document.querySelector(url.hash);
+  });
+
+  const setActiveLink = (activeLink) => {
+    navLinks.forEach((link) => {
+      const isActive = link === activeLink;
+      link.classList.toggle("active", isActive);
+      if (isActive) {
+        link.setAttribute("aria-current", activeLink.hash ? "true" : "page");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    });
+  };
+
+  const currentPageLink = navLinks.find((link) => {
+    const url = new URL(link.href);
+    const linkPath = url.pathname.split("/").pop() || "index.html";
+    return linkPath === currentPath && !url.hash;
+  });
+
+  if (!sectionLinks.length) {
+    if (currentPageLink) setActiveLink(currentPageLink);
+    return;
+  }
+
+  const sections = sectionLinks
+    .map((link) => ({ link, section: document.querySelector(new URL(link.href).hash) }))
+    .filter(({ section }) => section);
+
+  const updateActiveSection = () => {
+    const scrollPoint = window.scrollY + Math.round(window.innerHeight * 0.34);
+    const current = sections.reduce((active, item) => (
+      item.section.offsetTop <= scrollPoint ? item : active
+    ), sections[0]);
+
+    setActiveLink(current.link);
+  };
+
+  updateActiveSection();
+  window.addEventListener("scroll", updateActiveSection, { passive: true });
+  window.addEventListener("hashchange", updateActiveSection);
+}
+
+function initScrollReveals() {
+  const revealItems = [
+    ...document.querySelectorAll([
+      ".section-shell",
+      ".orbit-card",
+      ".portal-card",
+      ".mission-card",
+      ".spotlight-card",
+      ".regions-hero",
+      ".pokeballs-hero",
+      ".theory-hero",
+      ".main-pokeball",
+      ".pokeball-card",
+      ".capture-steps article",
+      ".region-detail-card",
+      ".theory-card",
+      ".mystery-grid article",
+      ".fun-grid article"
+    ].join(", "))
+  ];
+
+  if (!revealItems.length) return;
+
+  revealItems.forEach((item, index) => {
+    item.classList.add("reveal-on-scroll");
+    item.style.transitionDelay = `${Math.min(index % 6, 5) * 45}ms`;
+  });
+
+  if (!("IntersectionObserver" in window)) {
+    revealItems.forEach((item) => item.classList.add("revealed"));
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add("revealed");
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.14 });
+
+  revealItems.forEach((item) => observer.observe(item));
+}
+
+function renderDailyMission() {
+  if (!elements.dailyMissionTitle || !elements.dailyMissionText) return;
+
+  const mission = randomItem(dailyMissions);
+  elements.dailyMissionTitle.textContent = mission.title;
+  elements.dailyMissionText.textContent = mission.text;
+  professorSay(`New mission assigned: ${mission.title}.`);
+}
+
+function spinTypeWheel() {
+  if (!elements.spotlightArt || !elements.spotlightCard) return;
+
+  const prize = randomItem(mysteryWheelPrizes);
+  const result = prize.build();
+  const color = result.color || prize.color;
+
+  elements.spotlightBtn.disabled = true;
+  elements.spotlightBtn.textContent = "Spinning...";
+  elements.spotlightArt.classList.remove("has-result");
+  elements.spotlightArt.classList.add("is-spinning");
+  elements.spotlightArt.innerHTML = `
+    <div class="mystery-wheel-face">
+      <span></span>
+    </div>
+  `;
+  professorSay("Mystery wheel is spinning. Trainer fate is being lightly shuffled.");
+
+  window.setTimeout(() => {
+    elements.spotlightArt.classList.remove("is-spinning");
+    elements.spotlightArt.classList.add("has-result");
+    elements.spotlightArt.style.setProperty("--wheel-color", color);
+    elements.spotlightArt.innerHTML = `
+      <div class="type-wheel-result mystery-wheel-result">
+        <small>${prize.label}</small>
+        <strong>${result.title}</strong>
+        <span>${result.text}</span>
+        <em>${result.action}</em>
+      </div>
+    `;
+    elements.spotlightBtn.disabled = false;
+    elements.spotlightBtn.textContent = "Spin Again";
+    professorSay(`${prize.label}: ${result.title}.`);
+  }, 850);
 }
 
 async function comparePokemon() {
@@ -169,10 +761,14 @@ async function comparePokemon() {
     return;
   }
 
+  const compareButton = elements.compareForm.querySelector('button[type="submit"]');
+  compareButton.disabled = true;
+  compareButton.textContent = "Comparing...";
+  elements.compareForm.setAttribute("aria-busy", "true");
   elements.compareResults.innerHTML = `
     <div class="loading-state compact-loading">
       <div class="loader"></div>
-      <p>Comparing ${firstQuery} and ${secondQuery}...</p>
+      <p>Comparing ${escapeHtml(firstQuery)} and ${escapeHtml(secondQuery)}...</p>
     </div>
   `;
 
@@ -186,6 +782,10 @@ async function comparePokemon() {
     professorSay(`Comparison complete: ${capitalize(first.name)} versus ${capitalize(second.name)}.`);
   } catch (error) {
     elements.compareResults.innerHTML = `<p class="soft-message">Could not compare those Pokemon. Try valid names or IDs from the Pokedex.</p>`;
+  } finally {
+    compareButton.disabled = false;
+    compareButton.textContent = "Compare";
+    elements.compareForm.removeAttribute("aria-busy");
   }
 }
 
@@ -258,14 +858,24 @@ async function loadPokemonList() {
     if (!response.ok) throw new Error("Could not load Pokemon list");
 
     const data = await response.json();
-    const detailed = await Promise.all(
-      data.results.map((pokemon) => fetchPokemon(pokemon.name))
-    );
+    const listed = data.results.map((pokemon) => ({
+      id: getPokemonIdFromUrl(pokemon.url),
+      name: pokemon.name,
+      url: pokemon.url,
+      isSummary: true
+    }));
 
-    loadedPokemon = [...loadedPokemon, ...detailed];
+    loadedPokemon = [...loadedPokemon, ...listed];
     listOffset += PAGE_SIZE;
     renderPokemonList(loadedPokemon);
   } catch (error) {
+    elements.pokemonList.innerHTML = `
+      <div class="list-error">
+        <p class="soft-message">The Pokemon list could not load. Check your connection and try again.</p>
+        <button class="retry-search-btn" type="button" id="retryListBtn">Try again</button>
+      </div>
+    `;
+    document.getElementById("retryListBtn")?.addEventListener("click", loadPokemonList);
     showToast("Could not load Pokemon. Check your internet connection.");
   } finally {
     setListLoading(false);
@@ -284,8 +894,10 @@ function renderPokemonList(pokemon) {
   }
 
   elements.pokemonList.innerHTML = filtered.map((item) => {
-    const art = getArtwork(item);
-    const types = item.types.map(({ type }) => type.name).join(" / ");
+    const art = getListArtwork(item);
+    const types = item.types
+      ? item.types.map(({ type }) => type.name).join(" / ")
+      : "Select to inspect";
 
     return `
       <button class="list-card" type="button" onclick="searchPokemon('${item.name}')">
@@ -299,13 +911,15 @@ function renderPokemonList(pokemon) {
   }).join("");
 }
 
-async function searchPokemon(query) {
+async function searchPokemon(query, options = {}) {
   const cleanQuery = String(query).trim().toLowerCase();
   if (!cleanQuery) return;
 
+  const searchId = ++activeSearchId;
   currentPokemonQuery = cleanQuery;
   elements.searchInput.value = cleanQuery;
   setDetailLoading(cleanQuery);
+  setSearchLoading(true);
 
   try {
     const pokemon = await fetchPokemon(cleanQuery);
@@ -314,17 +928,26 @@ async function searchPokemon(query) {
       ? await fetchJson(species.evolution_chain.url)
       : null;
 
+    if (searchId !== activeSearchId) return;
+
     renderPokemonDetails(pokemon, species, evolution);
     reactToPokemon(pokemon);
-    document.getElementById("pokedex")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (options.scroll !== false) {
+      document.getElementById("pokedex")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   } catch (error) {
+    if (searchId !== activeSearchId) return;
     elements.detailPanel.innerHTML = `
       <div class="error-state">
-        <h3>Pokemon not found</h3>
-        <p>Try a name like "mewtwo" or an ID like "150".</p>
+        <h3>${navigator.onLine ? "Pokemon not found" : "You're offline"}</h3>
+        <p>${navigator.onLine ? "Try a name like ‘mewtwo’, ‘mimikyu’, a form name, or an ID like ‘150’." : "Reconnect to the internet, then try this search again."}</p>
+        <button class="retry-search-btn" type="button" id="retrySearchBtn">Try again</button>
       </div>
     `;
+    document.getElementById("retrySearchBtn")?.addEventListener("click", () => searchPokemon(cleanQuery));
     professorSay("That Pokemon dodged the search beam. Try another spelling.");
+  } finally {
+    if (searchId === activeSearchId) setSearchLoading(false);
   }
 }
 
@@ -332,8 +955,12 @@ async function fetchPokemon(nameOrId) {
   const key = String(nameOrId).toLowerCase();
   if (cache.has(key)) return cache.get(key);
 
-  const pokemon = await fetchJson(`${API_BASE}/pokemon/${key}`);
+  const apiKey = normalizePokemonQuery(key);
+  if (cache.has(apiKey)) return cache.get(apiKey);
+
+  const pokemon = await fetchJson(`${API_BASE}/pokemon/${apiKey}`);
   cache.set(key, pokemon);
+  cache.set(apiKey, pokemon);
   cache.set(String(pokemon.id), pokemon);
   cache.set(pokemon.name, pokemon);
   return pokemon;
@@ -343,6 +970,11 @@ async function fetchJson(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Request failed: ${url}`);
   return response.json();
+}
+
+function normalizePokemonQuery(query) {
+  const key = String(query).trim().toLowerCase().replace(/\s+/g, "-");
+  return pokemonSearchAliases[key] || key;
 }
 
 function renderPokemonDetails(pokemon, species, evolution) {
@@ -442,16 +1074,16 @@ function renderEvolutionChain(chain) {
 
 function renderTypeGuide() {
   elements.typeGrid.innerHTML = Object.entries(typeColors).map(([type, color]) => `
-    <div class="type-card type-name-card" style="--type-color:${color}">
+    <button class="type-card type-name-card" type="button" style="--type-color:${color}" onclick="searchType('${type}')">
       <span class="type-symbol">${type.slice(0, 2).toUpperCase()}</span>
       <span>${capitalize(type)}</span>
-    </div>
+    </button>
   `).join("");
 }
 
 async function searchType(type) {
   const matches = loadedPokemon.filter((pokemon) =>
-    pokemon.types.some(({ type: itemType }) => itemType.name === type)
+    pokemon.types?.some(({ type: itemType }) => itemType.name === type)
   );
 
   if (matches.length) {
@@ -459,7 +1091,21 @@ async function searchType(type) {
     document.getElementById("pokedex")?.scrollIntoView({ behavior: "smooth", block: "start" });
     showToast(`Showing loaded ${type} Pokemon.`);
   } else {
-    showToast("Load more Pokemon, then try that type again.");
+    try {
+      const data = await fetchJson(`${API_BASE}/type/${type}`);
+      const typePokemon = data.pokemon.slice(0, PAGE_SIZE).map(({ pokemon }) => ({
+        id: getPokemonIdFromUrl(pokemon.url),
+        name: pokemon.name,
+        url: pokemon.url,
+        isSummary: true
+      }));
+
+      renderPokemonList(typePokemon);
+      document.getElementById("pokedex")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      showToast(`Showing ${type} Pokemon.`);
+    } catch (error) {
+      showToast("Could not load that type right now.", "error");
+    }
   }
 }
 
@@ -507,9 +1153,20 @@ async function buildRandomTeam() {
   professorSay("A random team has entered the chat.");
 }
 
+function resetSilhouetteChallenge() {
+  silhouetteScore = 0;
+  startSilhouetteChallenge();
+}
+
+function resetProfessorQuiz() {
+  typeQuizScore = 0;
+  startProfessorQuiz();
+}
+
 async function startSilhouetteChallenge() {
   const answer = randomItem(mysteryPokemon);
   const pokemon = await fetchPokemon(answer);
+  const highScore = getHighScore("pokeVerseSilhouetteHighScore");
   const choices = shuffleOptions([
     answer,
     ...shuffleOptions(mysteryPokemon.filter((name) => name !== answer)).slice(0, 3)
@@ -520,6 +1177,7 @@ async function startSilhouetteChallenge() {
       <div>
         <p class="eyebrow">Shadow scan</p>
         <h3>Who's that Pokemon?</h3>
+        <p class="score-line">Current Score: <strong>${silhouetteScore}</strong> | High Score: <strong>${highScore}</strong></p>
       </div>
       <img class="silhouette-img" src="${getArtwork(pokemon)}" alt="Mystery Pokemon silhouette">
       <div class="silhouette-options">
@@ -533,6 +1191,9 @@ async function startSilhouetteChallenge() {
       const correct = button.dataset.guess === answer;
 
       if (correct) {
+        silhouetteScore += 1;
+        updateHighScore("pokeVerseSilhouetteHighScore", silhouetteScore);
+        launchConfettiBurst(button);
         elements.funResult.querySelector(".silhouette-img").classList.add("revealed");
         elements.funResult.querySelectorAll("[data-guess]").forEach((option) => {
           option.disabled = true;
@@ -548,13 +1209,17 @@ async function startSilhouetteChallenge() {
         elements.funResult.querySelectorAll("[data-guess]").forEach((option) => {
           option.disabled = true;
         });
+        const finalHighScore = updateHighScore("pokeVerseSilhouetteHighScore", silhouetteScore);
         document.querySelector(".silhouette-game").insertAdjacentHTML("beforeend", `
           <p class="quiz-feedback">
-            Correct answer: <strong>${capitalize(answer)}</strong>
-            <button type="button" id="nextSilhouetteBtn">Next Question</button>
+            <span>
+              Correct answer: <strong>${capitalize(answer)}</strong><br>
+              Current Score: <strong>${silhouetteScore}</strong> | High Score: <strong>${finalHighScore}</strong>
+            </span>
+            <button type="button" id="nextSilhouetteBtn">Play Again</button>
           </p>
         `);
-        document.getElementById("nextSilhouetteBtn").addEventListener("click", startSilhouetteChallenge);
+        document.getElementById("nextSilhouetteBtn").addEventListener("click", resetSilhouetteChallenge);
         professorSay(`Not that one. It was ${capitalize(answer)}.`);
         showToast("Answer revealed.", "error");
       }
@@ -563,10 +1228,13 @@ async function startSilhouetteChallenge() {
 }
 
 async function startProfessorQuiz() {
+  const highScore = getHighScore("pokeVerseTypeQuizHighScore");
+
   elements.funResult.innerHTML = `
     <div class="quiz-card">
       <p class="eyebrow">Type quiz</p>
       <h3>Loading a mystery Pokemon...</h3>
+      <p class="score-line">Current Score: <strong>${typeQuizScore}</strong> | High Score: <strong>${highScore}</strong></p>
       <div class="loader"></div>
     </div>
   `;
@@ -582,6 +1250,7 @@ async function startProfessorQuiz() {
     <div class="quiz-card">
       <p class="eyebrow">Type quiz</p>
       <h3>What type is ${capitalize(pokemon.name)}?</h3>
+      <p class="score-line">Current Score: <strong>${typeQuizScore}</strong> | High Score: <strong>${highScore}</strong></p>
       <img class="quiz-pokemon" src="${getArtwork(pokemon)}" alt="${pokemon.name}">
       <div class="quiz-options">
         ${choices.map((answer) => `<button type="button" data-answer="${answer}">${capitalize(answer)}</button>`).join("")}
@@ -599,15 +1268,22 @@ async function startProfessorQuiz() {
       });
 
       if (isCorrect) {
+        typeQuizScore += 1;
+        updateHighScore("pokeVerseTypeQuizHighScore", typeQuizScore);
+        launchConfettiBurst(button);
         professorSay("Correct. Loading another type question.");
         showToast("Correct. Next question coming up.", "success");
         window.setTimeout(startProfessorQuiz, 900);
       } else {
+        const finalHighScore = updateHighScore("pokeVerseTypeQuizHighScore", typeQuizScore);
         document.getElementById("quizFeedback").innerHTML = `
-          Correct answer: <strong>${capitalize(correct)}</strong>
-          <button type="button" id="nextQuizBtn">Next Question</button>
+          <span>
+            Correct answer: <strong>${capitalize(correct)}</strong><br>
+            Current Score: <strong>${typeQuizScore}</strong> | High Score: <strong>${finalHighScore}</strong>
+          </span>
+          <button type="button" id="nextQuizBtn">Play Again</button>
         `;
-        document.getElementById("nextQuizBtn").addEventListener("click", startProfessorQuiz);
+        document.getElementById("nextQuizBtn").addEventListener("click", resetProfessorQuiz);
         professorSay(`Not quite. Correct answer: ${capitalize(correct)}.`);
         showToast("Answer revealed.", "error");
       }
@@ -615,39 +1291,125 @@ async function startProfessorQuiz() {
   });
 }
 
+function getHighScore(key) {
+  return Number(localStorage.getItem(key)) || 0;
+}
+
+function updateHighScore(key, score) {
+  const highScore = Math.max(getHighScore(key), score);
+  localStorage.setItem(key, String(highScore));
+  return highScore;
+}
+
 function toggleFavorite(name) {
   const favorites = getFavorites();
   const exists = favorites.includes(name);
-  const nextFavorites = exists
-    ? favorites.filter((item) => item !== name)
-    : [...favorites, name];
 
-  localStorage.setItem("pokeVerseFavorites", JSON.stringify(nextFavorites));
-  renderFavorites();
-  searchPokemon(name);
-  showToast(exists ? "Removed from favorites." : "Added to favorites.");
-}
-
-async function renderFavorites() {
-  const favorites = getFavorites();
-
-  if (!favorites.length) {
-    elements.favoritesGrid.innerHTML = `<p class="soft-message">Favorite Pokemon will appear here after you save them.</p>`;
+  if (exists) {
+    removeFavorite(name);
     return;
   }
 
-  const favoritePokemon = await Promise.all(favorites.map((name) => fetchPokemon(name)));
-  elements.favoritesGrid.innerHTML = favoritePokemon.map((pokemon) => `
-    <button type="button" class="favorite-card" onclick="searchPokemon('${pokemon.name}')">
-      <img src="${getArtwork(pokemon)}" alt="${pokemon.name}">
-      <strong>${capitalize(pokemon.name)}</strong>
-      <span>#${padId(pokemon.id)}</span>
-    </button>
-  `).join("");
+  const nextFavorites = [...favorites, name];
+
+  localStorage.setItem("pokeVerseFavorites", JSON.stringify(nextFavorites));
+  renderFavorites();
+  searchPokemon(name, { scroll: false });
+  launchConfettiBurst();
+  showToast("Added to favorites.", "success");
+}
+
+async function renderFavorites() {
+  if (!elements.favoritesGrid) return;
+
+  const favorites = getFavorites();
+
+  if (!favorites.length) {
+    elements.favoritesGrid.innerHTML = `
+      <div class="favorites-empty">
+        <div class="empty-pokeball" aria-hidden="true"></div>
+        <div>
+          <p class="eyebrow">Team shelf waiting</p>
+          <h3>No favorites yet.</h3>
+          <p>Open a Pokemon profile and press Add to Favorites. Your saved partners will turn into a little team showcase here.</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  elements.favoritesGrid.setAttribute("aria-busy", "true");
+  elements.favoritesGrid.innerHTML = `<p class="soft-message">Loading your saved Pokemon...</p>`;
+
+  let favoritePokemon;
+  try {
+    favoritePokemon = await Promise.all(favorites.map((name) => fetchPokemon(name)));
+  } catch (error) {
+    elements.favoritesGrid.innerHTML = `<div class="favorites-empty"><div><h3>Saved team unavailable</h3><p>Reconnect to load your favorites. Your saved list is still safe on this device.</p><button class="retry-search-btn" type="button" onclick="renderFavorites()">Try again</button></div></div>`;
+    elements.favoritesGrid.removeAttribute("aria-busy");
+    return;
+  }
+  const typeSet = new Set(favoritePokemon.flatMap((pokemon) =>
+    pokemon.types.map(({ type }) => type.name)
+  ));
+  const teamCount = favoritePokemon.length;
+  const teamPercent = Math.min(100, Math.round((teamCount / 6) * 100));
+  const typePreview = [...typeSet].slice(0, 8).map((type) => typeBadge(type)).join("");
+
+  elements.favoritesGrid.innerHTML = `
+    <div class="favorites-summary">
+      <div>
+        <p class="eyebrow">Team energy</p>
+        <h3>${teamCount} saved partner${teamCount === 1 ? "" : "s"}</h3>
+        <p>${teamCount >= 6 ? "Full squad ready." : `${6 - teamCount} more slot${6 - teamCount === 1 ? "" : "s"} until a full party.`}</p>
+      </div>
+      <div class="team-meter" aria-label="Team completion ${teamPercent}%">
+        <span style="width:${teamPercent}%"></span>
+      </div>
+      <div class="favorite-type-row">${typePreview || "<span>No types yet</span>"}</div>
+    </div>
+    ${favoritePokemon.map((pokemon, index) => {
+      const types = pokemon.types.map(({ type }) => typeBadge(type.name)).join("");
+      const total = totalStats(pokemon);
+
+      return `
+        <article class="favorite-card" style="--favorite-delay:${index * 60}ms">
+          <button type="button" class="favorite-open" onclick="searchPokemon('${pokemon.name}')">
+            <span class="favorite-rank">#${padId(pokemon.id)}</span>
+            <img src="${getArtwork(pokemon)}" alt="${pokemon.name}">
+            <strong>${capitalize(pokemon.name)}</strong>
+            <span class="favorite-total">${total} total stats</span>
+            <div class="badge-row">${types}</div>
+          </button>
+          <button type="button" class="remove-favorite-btn" onclick="removeFavorite('${pokemon.name}')">
+            Remove
+          </button>
+        </article>
+      `;
+    }).join("")}
+  `;
+  elements.favoritesGrid.removeAttribute("aria-busy");
+}
+
+function removeFavorite(name) {
+  const nextFavorites = getFavorites().filter((item) => item !== name);
+  localStorage.setItem("pokeVerseFavorites", JSON.stringify(nextFavorites));
+  renderFavorites();
+
+  if (name === currentPokemonQuery) {
+    searchPokemon(name, { scroll: false });
+  }
+
+  showToast(`${capitalize(name)} removed from favorites.`);
 }
 
 function getFavorites() {
-  return JSON.parse(localStorage.getItem("pokeVerseFavorites")) || [];
+  try {
+    const favorites = JSON.parse(localStorage.getItem("pokeVerseFavorites"));
+    return Array.isArray(favorites) ? favorites : [];
+  } catch (error) {
+    return [];
+  }
 }
 
 function typeBadge(type) {
@@ -682,7 +1444,7 @@ function setDetailLoading(query) {
   elements.detailPanel.innerHTML = `
     <div class="loading-state">
       <div class="loader"></div>
-      <p>Scanning PokeVerse for ${query}...</p>
+      <p>Scanning PokeVerse for ${escapeHtml(query)}...</p>
     </div>
   `;
 }
@@ -692,13 +1454,121 @@ function setListLoading(isLoading) {
   elements.loadMoreBtn.textContent = isLoading ? "Loading..." : "Load More";
 }
 
+function setSearchLoading(isLoading) {
+  const button = elements.heroSearch?.querySelector('button[type="submit"]');
+  if (!button) return;
+  button.disabled = isLoading;
+  button.textContent = isLoading ? "Searching..." : "Search";
+  elements.heroSearch.setAttribute("aria-busy", String(isLoading));
+}
+
 function showToast(message, type = "info") {
+  if (!elements.toast) return;
+
   elements.toast.textContent = message;
   elements.toast.className = `toast visible ${type}`;
+  playUiSound(type === "success" ? "success" : type === "error" ? "error" : "notice");
   window.clearTimeout(showToast.timeout);
   showToast.timeout = window.setTimeout(() => {
     elements.toast.classList.remove("visible");
   }, 2400);
+}
+
+function playUiSound(type = "click") {
+  if (!soundEnabled) return;
+
+  const now = Date.now();
+  if (now - lastUiSoundAt < 45) return;
+  lastUiSoundAt = now;
+
+  try {
+    audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+    if (audioContext.state === "suspended") audioContext.resume();
+
+    const sounds = {
+      click: [520, 0.035, "square", 0.018],
+      confirm: [740, 0.07, "triangle", 0.026],
+      success: [880, 0.09, "sine", 0.03],
+      error: [180, 0.11, "sawtooth", 0.024],
+      notice: [620, 0.06, "triangle", 0.02]
+    };
+    const [frequency, duration, wave, volume] = sounds[type] || sounds.click;
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    const start = audioContext.currentTime;
+
+    oscillator.type = wave;
+    oscillator.frequency.setValueAtTime(frequency, start);
+    oscillator.frequency.exponentialRampToValueAtTime(Math.max(80, frequency * 0.72), start + duration);
+    gain.gain.setValueAtTime(volume, start);
+    gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+    oscillator.start(start);
+    oscillator.stop(start + duration);
+  } catch (error) {
+    // Sound effects are optional; ignore browsers that block Web Audio.
+  }
+}
+
+function createButtonRipple(event, control) {
+  if (!control.matches("button, .pill-link, .site-nav a, .portal-card, .region-link")) return;
+
+  const rect = control.getBoundingClientRect();
+  const ripple = document.createElement("span");
+  const size = Math.max(rect.width, rect.height);
+
+  ripple.className = "button-ripple";
+  ripple.style.width = `${size}px`;
+  ripple.style.height = `${size}px`;
+  ripple.style.left = `${event.clientX - rect.left - size / 2}px`;
+  ripple.style.top = `${event.clientY - rect.top - size / 2}px`;
+
+  control.classList.add("has-ripple");
+  control.appendChild(ripple);
+  window.setTimeout(() => ripple.remove(), 520);
+}
+
+function launchConfettiBurst(origin) {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const rect = origin?.getBoundingClientRect?.();
+  const x = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
+  const y = rect ? rect.top + rect.height / 2 : Math.min(window.innerHeight * 0.42, 360);
+  const colors = ["#ef4444", "#facc15", "#10b981", "#2563eb", "#7c3aed"];
+
+  for (let index = 0; index < 18; index += 1) {
+    const confetti = document.createElement("span");
+    const angle = (Math.PI * 2 * index) / 18;
+    const distance = 70 + Math.random() * 58;
+
+    confetti.className = "confetti-piece";
+    confetti.style.left = `${x}px`;
+    confetti.style.top = `${y}px`;
+    confetti.style.background = colors[index % colors.length];
+    confetti.style.setProperty("--confetti-x", `${Math.cos(angle) * distance}px`);
+    confetti.style.setProperty("--confetti-y", `${Math.sin(angle) * distance - 24}px`);
+    confetti.style.setProperty("--confetti-rotate", `${Math.round(Math.random() * 240 + 80)}deg`);
+    document.body.appendChild(confetti);
+    window.setTimeout(() => confetti.remove(), 760);
+  }
+}
+
+function createClickSpark(x, y) {
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+  const now = Date.now();
+  if (now - lastSparkAt < 90) return;
+  lastSparkAt = now;
+
+  window.requestAnimationFrame(() => {
+    const spark = document.createElement("span");
+    spark.className = "click-spark";
+    spark.style.left = `${x}px`;
+    spark.style.top = `${y}px`;
+    document.body.appendChild(spark);
+    window.setTimeout(() => spark.remove(), 520);
+  });
 }
 
 function professorSay(message) {
@@ -711,6 +1581,29 @@ function getArtwork(pokemon) {
     || pokemon.sprites.other.home.front_default
     || pokemon.sprites.front_default;
 }
+
+function getListArtwork(pokemon) {
+  if (pokemon.sprites) return getArtwork(pokemon);
+  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`;
+}
+
+function getPokemonIdFromUrl(url) {
+  const parts = String(url).split("/").filter(Boolean);
+  return Number(parts[parts.length - 1]);
+}
+
+function getRecommendedPokemonId(name) {
+  return recommendedPokemonIds[name] || 25;
+}
+
+function scheduleIdleTask(task) {
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(task, { timeout: 1200 });
+  } else {
+    window.setTimeout(task, 250);
+  }
+}
+
 
 function getEnglishFlavor(species) {
   const entry = species.flavor_text_entries.find((item) => item.language.name === "en");
@@ -732,6 +1625,16 @@ function capitalize(text) {
 
 function formatName(text) {
   return String(text).split("-").map(capitalize).join(" ");
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>'"]/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "'": "&#39;",
+    '"': "&quot;"
+  })[character]);
 }
 
 function randomItem(items) {

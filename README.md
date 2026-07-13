@@ -5,6 +5,7 @@ PokeVerse is a colorful interactive Pokemon website built with HTML, CSS, and Ja
 ## Features
 
 - Interactive homepage with animated Pokemon artwork
+- Trainer dashboard with daily missions, a surprise Pokemon spotlight, and learning portals
 - Pokemon search by name or ID
 - Random Pokemon and mystery encounter buttons
 - Browseable Pokedex list with filtering
@@ -12,6 +13,7 @@ PokeVerse is a colorful interactive Pokemon website built with HTML, CSS, and Ja
 - Compare tool for viewing two Pokemon side by side
 - Favorites saved in browser `localStorage`
 - Type guide, region guide, detailed regions page, and trainer academy sections
+- Dedicated Pokeballs page covering ball types, capture strategy, and special cases
 - Dedicated theories page for Pokemon lore, mysteries, and fan ideas
 - Fun Lab with random team building, silhouette guessing, and a type quiz easter egg
 - Responsive layout for desktop and mobile
@@ -26,6 +28,7 @@ PokeVerse/
 |   +-- index.html
 |   +-- home.html
 |   +-- pokemon.html
+|   +-- pokeballs.html
 |   +-- regions.html
 |   +-- theories.html
 +-- images/
@@ -49,6 +52,7 @@ The app fetches live data from [PokeAPI](https://pokeapi.co/), so an internet co
 - `html/index.html` - Main PokeVerse website
 - `html/home.html` - Redirects into the Pokedex section
 - `html/pokemon.html` - Redirects into the Pokedex section
+- `html/pokeballs.html` - Learning page for Pokeballs and capture strategy
 - `html/regions.html` - Detailed region guide page
 - `html/theories.html` - Pokemon theory and lore learning page
 - `images/regions-overview.png` - Generated region overview artwork

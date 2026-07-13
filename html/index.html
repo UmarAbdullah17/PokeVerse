@@ -14,10 +14,13 @@
     </a>
 
     <nav class="site-nav" aria-label="Main navigation">
+      <a href="#trainerDashboard">Dashboard</a>
       <a href="#pokedex">Pokedex</a>
       <a href="#types">Types</a>
       <a href="#regions">Regions</a>
       <a href="#academy">Academy</a>
+      <a href="#trainerChecklist">Checklist</a>
+      <a href="pokeballs.html">Pokeballs</a>
       <a href="theories.html">Theories</a>
       <a href="#compare">Compare</a>
       <a href="#funLab">Fun Lab</a>
@@ -35,14 +38,23 @@
           and discover quick lessons from across the Pokemon universe.
         </p>
 
-        <form class="hero-search" id="heroSearch">
+        <form class="hero-search" id="heroSearch" role="search">
           <label class="sr-only" for="searchInput">Search Pokemon by name or ID</label>
-          <input id="searchInput" type="search" placeholder="Search Pikachu, Charizard, 25..." autocomplete="off">
+          <input id="searchInput" type="search" role="combobox" placeholder="Search Pikachu, Charizard, 25..." autocomplete="off" aria-autocomplete="list" aria-controls="searchSuggestions" aria-expanded="false">
           <button type="submit">Search</button>
+          <button class="random-search-btn" type="button" data-random aria-label="Random Pokemon" title="Random Pokemon">🎲</button>
+          <div class="search-suggestions" id="searchSuggestions" role="listbox" aria-label="Pokemon search suggestions"></div>
         </form>
 
+        <div class="search-recommendations" aria-label="Recommended Pokemon searches">
+          <div>
+            <span>Recommended searches</span>
+            <button type="button" id="refreshRecommendations">Refresh</button>
+          </div>
+          <div class="recommendation-list" id="recommendationList"></div>
+        </div>
+
         <div class="quick-actions" aria-label="Quick Pokemon searches">
-          <button type="button" data-random>Random Pokemon</button>
           <button type="button" data-pokemon="pikachu">Pikachu</button>
           <button type="button" data-pokemon="charizard">Charizard</button>
           <button type="button" data-pokemon="greninja">Greninja</button>
@@ -70,6 +82,55 @@
       </div>
     </section>
 
+    <section class="section-shell trainer-dashboard" id="trainerDashboard">
+      <div class="dashboard-intro">
+        <p class="eyebrow">Trainer dashboard</p>
+        <p>
+          Jump into a daily mission, discover a surprise Pokemon, or open a
+          learning path from the PokeVerse academy.
+        </p>
+      </div>
+
+      <div class="dashboard-grid">
+        <article class="mission-card">
+          <span class="mission-badge">Daily Mission</span>
+          <h3 id="dailyMissionTitle">Loading mission...</h3>
+          <p id="dailyMissionText">Professor Pixel is choosing something useful.</p>
+          <button type="button" id="newMissionBtn">New Mission</button>
+        </article>
+
+        <article class="spotlight-card" id="spotlightCard">
+          <div>
+            <p class="eyebrow">Mystery wheel</p>
+            <h3>Spin for a trainer surprise</h3>
+            <p>Land on a challenge, encounter, team rule, region quest, or capture dare.</p>
+            <button type="button" id="spotlightBtn">Spin Mystery</button>
+          </div>
+          <div class="spotlight-art" id="spotlightArt" aria-live="polite">
+            <div class="mystery-wheel-face" aria-hidden="true">
+              <span></span>
+            </div>
+          </div>
+        </article>
+
+        <a class="portal-card portal-red" href="pokeballs.html">
+          <span>01</span>
+          <h3>Pokeball Vault</h3>
+          <p>Learn capture tools, special balls, and smarter catching strategy.</p>
+        </a>
+        <a class="portal-card portal-blue" href="regions.html">
+          <span>02</span>
+          <h3>Region Atlas</h3>
+          <p>Travel through Kanto, Johto, Hoenn, Sinnoh, Unova, and beyond.</p>
+        </a>
+        <a class="portal-card portal-violet" href="theories.html">
+          <span>03</span>
+          <h3>Lore Files</h3>
+          <p>Explore timelines, legendary myths, Ultra Space, and weird mysteries.</p>
+        </a>
+      </div>
+    </section>
+
     <section class="section-shell" id="pokedex">
       <div class="section-heading">
         <p class="eyebrow">Live Pokedex</p>
@@ -83,6 +144,7 @@
             <button type="button" id="loadMoreBtn">Load More</button>
           </div>
           <div class="mini-search">
+            <label class="sr-only" for="filterInput">Filter the loaded Pokemon</label>
             <input id="filterInput" type="search" placeholder="Filter loaded Pokemon">
           </div>
           <div class="pokemon-list" id="pokemonList" aria-live="polite"></div>
@@ -172,6 +234,47 @@
           <h3>Stats</h3>
           <p>HP, Attack, Defense, Special Attack, Special Defense, and Speed define a Pokemon battle role.</p>
         </article>
+        <article>
+          <span>04</span>
+          <h3>Type Matchups</h3>
+          <p>Every type has strengths, weaknesses, resistances, and immunities that can completely change a battle plan.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-shell" id="trainerChecklist">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Trainer checklist</p>
+          <h2>Small details that make a stronger team</h2>
+        </div>
+      </div>
+
+      <div class="mystery-grid answer-grid">
+        <article>
+          <h3>Cover weaknesses</h3>
+          <p>A good team has answers for its own weak spots. If two favorites share a weakness, add a teammate that resists or threatens that type.</p>
+        </article>
+        <article>
+          <h3>Mix roles</h3>
+          <p>Try combining fast attackers, bulky defenders, status users, and support Pokemon instead of choosing only high-damage favorites.</p>
+        </article>
+        <article>
+          <h3>Watch abilities</h3>
+          <p>Abilities can change a battle before a move is used. Weather, immunity, speed, healing, and contact effects can all swing momentum.</p>
+        </article>
+        <article>
+          <h3>Plan movesets</h3>
+          <p>Four moves should work together. Include same-type attacks, coverage moves, status options, or setup moves depending on the Pokemon's role.</p>
+        </article>
+        <article>
+          <h3>Think about items</h3>
+          <p>Held items can boost power, restore HP, protect against status, or help a Pokemon survive a hit it normally could not handle.</p>
+        </article>
+        <article>
+          <h3>Build personality</h3>
+          <p>The strongest team is not always only about numbers. Themes, favorite colors, matching Pokeballs, and region identity make teams memorable.</p>
+        </article>
       </div>
     </section>
 
@@ -200,8 +303,11 @@
 
     <section class="section-shell" id="favorites">
       <div class="section-heading">
-        <p class="eyebrow">Your team</p>
-        <h2>Favorite Pokemon</h2>
+        <div>
+          <p class="eyebrow">Your team shelf</p>
+          <h2>Favorite Pokemon</h2>
+          <p class="section-intro">Save Pokemon from the Pokedex and watch your personal team shelf come alive. Favorites stay saved on this device after you close the site.</p>
+        </div>
       </div>
       <div class="favorites-grid" id="favoritesGrid"></div>
     </section>
