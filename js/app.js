@@ -611,6 +611,17 @@ function initSiteEnhancements() {
 
   const updateSoundToggle = () => {
     soundToggle.classList.toggle("muted", !soundEnabled);
+    soundToggle.innerHTML = soundEnabled
+      ? `<svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
+          <path d="M15 9.5a4 4 0 0 1 0 5"></path>
+          <path d="M18 7a7 7 0 0 1 0 10"></path>
+        </svg>`
+      : `<svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
+          <path d="m16 10 5 5"></path>
+          <path d="m21 10-5 5"></path>
+        </svg>`;
     soundToggle.title = soundEnabled ? "Sound on" : "Sound off";
     soundToggle.setAttribute("aria-label", soundEnabled ? "Turn sound effects off" : "Turn sound effects on");
   };
