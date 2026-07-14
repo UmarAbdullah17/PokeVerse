@@ -3387,18 +3387,18 @@ html[data-theme="dark"] .theme-toggle {
 
 html[data-theme="dark"] .back-to-top {
   background:
-    linear-gradient(#dc2626 0 46%, #020617 47% 53%, #172033 54% 100%);
+    linear-gradient(#dc2626 0 46%, #020617 47% 53%, #ffffff 54% 100%);
   border-color: #94a3b8;
   box-shadow: 0 16px 34px rgba(0, 0, 0, 0.46);
 }
 
 html[data-theme="dark"] .back-to-top span {
-  background: #0b1120;
-  border-color: #cbd5e1;
+  background: #ffffff;
+  border-color: #172033;
 }
 
 html[data-theme="dark"] .back-to-top span::before {
-  border-color: #f8fafc;
+  border-color: #172033;
 }
 
 html[data-theme="dark"] .back-to-top:hover {
